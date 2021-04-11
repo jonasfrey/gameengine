@@ -41,6 +41,9 @@ class Pixel_Drawer {
 
         this.ctx = this.canvas.getContext('2d');
 
+
+
+
         this.canvas.style.background = "black"; 
         this.clear_color = "hsla(0,0%, 0%, 1)";
         this.scale_x = 1;
@@ -95,6 +98,7 @@ class Pixel_Drawer {
             this.canvas.width = this.canvas.parentElement.offsetWidth;
             this.canvas.height = this.canvas.parentElement.offsetHeight;
         }
+        this.ctx.translate(this.canvas.width/2,this.canvas.height/2);
     }
 
     /**
@@ -227,7 +231,7 @@ class Pixel_Drawer {
      * @param {array} pixels 
      */
     render_pixel_drawer_point_3_d_instances(){
-        console.log(Pixel_Drawer_Point_3_D.instances.length);
+        
         this.draw_pixels(Pixel_Drawer_Point_3_D.instances)
     }
 
@@ -258,6 +262,7 @@ class Pixel_Drawer {
             for (var key in pixels) {
                 var pixel = pixels[key];
                 var scaled_pixel = this.get_scaled_pixel(pixel);
+                
                 this["draw_pixel_" + name](scaled_pixel)
             }
         }

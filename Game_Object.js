@@ -55,12 +55,23 @@ class Game_Object {
 
       this.render_id_limit = 0;
       this.render_id = 0; 
-
+      
       this.collision_function = function(){return false}
       this.render_function = function(){return false}
     
       
       console.log(this + "was constructed");
+    }
+
+    get hue(){
+      return this._hue;
+    }
+    set hue(val){
+      this._hue = val;
+      for(var key in this.points_object.pixel_drawer_points){
+        this.points_object.pixel_drawer_points[key].hue = val;
+      }
+      
     }
 
     delete_point_by_object(point_object){
@@ -154,6 +165,7 @@ class Game_Object {
 Game_Object.prototype.destroy = function () {
   var i = 0;
   while (Game_Object.instances[i] !== this) { i++; }
+  Game_Object.instances[i].points_object.destroy_points();
   Game_Object.instances.splice(i, 1);
 };
 

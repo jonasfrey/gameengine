@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Pixel_Drawer_Point_3_D} from './Pixel_Drawer_Point_3_D.js';
+
+
+class Game {
+  constructor(multiline_string){
+      
+    
+    this.pixel_drawer = new Pixel_Drawer(document.querySelector("canvas#game"));
+    
+    //we pass the reference here 
+    this.pixel_drawer.pixels = Pixel_Drawer_Point_3_D.instances;
+
+    var per_width = 10;
+    
+    var self = this;
+
+    this.pixel_drawer.scale_x = 3;
+    this.pixel_drawer.scale_y = 3;
+
+    this.render_id = 0;
+    this.fps = 60;
+    this.render_delta_limit_ms = 1000/this.fps;
+    this.render_delta_ms = 0;
+    this.performance_now = performance.now();
+    this.performance_then = performance.now();
+    this.keydownsups = {};
+    this.audio_context = new AudioContext();
+    for(var i = 0; i < 255; i++){
+        this.keydownsups["keyCode_"+i] = {down:false};
+    }
+
+    /**
+     * used for detecting collisions
+     * [
+     *       if a array has two items a collision has occured
+     *  [[x0] [x1, x1]] y 1  
+     *  []
+     *  [] 
+     * ] */
+    this.collision_array = [];
+    this.collision_objects = {};
+    this._last_rendered_collision_objects = {};
+
+    this.audio_context_muted = true;
+    this.audio_context_button = document.querySelector("#audio_context");
+    this.audio_context_button.onclick = function(){
+        self.audio_context_muted = !self.audio_context_muted;
+        if(self.audio_context_muted){
+            self.audio_context_button.innerText = "no sound";
+        }else{
+            self.audio_context_button.innerText = "sound";
+        }
+        
+        self.audio_context.resume().then(() => {
+            console.log('Playback resumed successfully');
+
+
+        });
+
+    }
+
+
+
+    var game = this;
+
+    game.destroy_if_out_of_bounds = function(game_object){
+        var self = game_object || this;
+        if(
+                self.position_point_3_d.x <0 ||
+                self.position_point_3_d.x > game.pixel_grid_width ||
+                self.position_point_3_d.y <0 ||
+                self.position_point_3_d.y > game.pixel_grid_height
+                    ){
+                self.destroy();
+                return true;
+        }
+        return false;
+    }
+    game.pixel_grid_width = 200;
+    game.pixel_grid_height = 200;
+
+    this.spaceship = new Game_Object(
+`
+   x   
+   x   
+  xxx  
+  xxx  
+  xxx  
+  xxx  
+xxx xxx
+   x   
+  xxx  
+   x   
+`
+);
+    this.spaceship.name = "spaceship"
+    this.spaceship.hue = 111;
+    this.spaceship.position_point_3_d.x = 20;
+    this.spaceship.position_point_3_d.y = 20;
+    this.spaceship.movement_speed = 0.05
+
+    this.spaceship.flame_pixels = this.spaceship.points_object.pixel_drawer_points.slice(Math.max(this.spaceship.points_object.pixel_drawer_points.length - 5, 1))
+
+    this.spaceship.render_function = function(){
+
+        /**
+         * left = 37
+        up = 38
+        right = 39
+        down = 40
+        spacebar = 32
+        **/
+        if (game.keydownsups["keyCode_37"].down) {
+            //this.position_velocity_point_3_d.x -= this.movement_speed;
+            // i dont know what axis this is , depends on the view of the game , in a top down shooter it could be the yaw axis... just using x for now
+            this.rotation_point_3_d.x -= Math.PI * 2 / 32;
+        
+            //console.log(this.rotation_point_3_d);
+        }
+        if (game.keydownsups["keyCode_38"].down) {
+            this.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed;
+            this.position_velocity_point_3_d.y -= (Math.cos(this.rotation_point_3_d.x))* this.movement_speed;
+            for(var key in this.flame_pixels){
+                this.flame_pixels[key].brightness = Math.random();
+            }
+        }else{
+            for(var key in this.flame_pixels){
+                this.flame_pixels[key].brightness = 0;
+            }
+        }
+        if (game.keydownsups["keyCode_39"].down) {
+            //this.position_velocity_point_3_d.x += this.movement_speed;
+            this.rotation_point_3_d.x += Math.PI * 2 / 32;
+
+        }
+        if (game.keydownsups["keyCode_40"].down) {
+            this.position_velocity_point_3_d.x += (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed;
+            this.position_velocity_point_3_d.y += (Math.cos(this.rotation_point_3_d.x))* this.movement_speed;
+        }
+
+        if (game.keydownsups["keyCode_32"].down) {
+            //this.scale_point_3_d.x +=0.1;
+            //spawn_asteroid();
+            this.shoot();
+        }
+
+        this.position_point_3_d.x = this.position_point_3_d.x % (game.pixel_grid_width/2);
+        this.position_point_3_d.y = this.position_point_3_d.y % (game.pixel_grid_height/2);
+
+    }
+
+    this.spaceship.shot_position_pixel_index = 0;
+    this.spaceship.shoot = function(){
+
+        var shot = new Game_Object(`\nx\nx`);
+        shot.name = "shot";
+        shot.hue =  222;
+        //shot.hue = this.hue;
+        shot.movement_speed = 2;
+        shot.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* shot.movement_speed;
+        shot.position_velocity_point_3_d.y  -= (Math.cos(this.rotation_point_3_d.x))* shot.movement_speed;
+
+        //shot.rotation_point_3_d.x = this.rotation_point_3_d.x;
+        //shot.rotation_point_3_d.y = this.rotation_point_3_d.y;
+        // shot.position_velocity_point_3_d.x = this.position_velocity_point_3_d.x * 2;
+        // shot.position_velocity_point_3_d.y = this.position_velocity_point_3_d.y * 2;
+
+        var positions = [0, 14, 19];
+        this.shot_position_pixel_index = (this.shot_position_pixel_index +1) % positions.length;
+        var indx = positions[this.shot_position_pixel_index];
+        
+        shot.position_point_3_d.x = this.points_object.pixel_drawer_points[indx].x;
+        shot.position_point_3_d.y = this.points_object.pixel_drawer_points[indx].y;
+
+        shot.render_function = game.destroy_if_out_of_bounds;
+        
+
+    }
+    var spawn_asteroid = function(){
+        var asteroid_multiline_strings = [
+`
+  x  
+ x x 
+x   x
+ x x 
+  x  
+`, 
+`
+ xx   
+x  x  
+x   x 
+ x  x 
+  x x 
+  xx 
+`,
+`
+ x   
+x x  
+x  x 
+ x x 
+  x  
+`,
+`
+    xx   
+   x  x  
+ xx    x 
+x      xx
+x    xx  
+ x  x    
+  xx     
+`,
+`
+  x 
+ x x
+ x x
+  x 
+`,
+`
+  x 
+ x x
+  x 
+`,
+`
+  x 
+ x x
+ x x
+x   x
+  x 
+`
+        ];
+        var size = Math.random()*10 + 5;
+        var asteroid_multiline_string = ``;
+        // trying to generate random asteroid multiline strings, to difficult for now
+        // for(var y = 0; y<size ; y++){
+        //     for(var x = 0; x<size ; x++){
+        //         if(y== 0 || y==size-1){
+        //             for(var s = 0; s<size; s++){
+        //                 // aproach without if var str = size / 2 % 1 == 0
+        //                 if(size / 2 % 1 == 0){
+        //                     var str = (s == parseInt(size/2) || s == parseInt(size/2)+1) ? 'x': ' '
+        //                 }
+        //                 asteroid_multiline_string+=str;
+        //             } 
+        //             continue;
+        //         }
+        //     }
+        // }
+        var random_asteroid_multiline_string = asteroid_multiline_strings[Math.floor(Math.random() * asteroid_multiline_strings.length)];
+        var asteroid = new Game_Object(random_asteroid_multiline_string)
+        asteroid.position_point_3_d.x = Math.random()*200;
+        asteroid.position_point_3_d.y = Math.random()*200;
+        asteroid.rotation_point_3_d.x = Math.random()*0.2;
+        asteroid.rotation_velocity_point_3_d.x = Math.random()*0.2;
+        asteroid.movement_speed_x = (Math.random()-0.5) *1;
+        asteroid.movement_speed_y = (Math.random()-0.5) *1;
+
+        asteroid.position_velocity_point_3_d.x += asteroid.movement_speed_x;
+        asteroid.position_velocity_point_3_d.y += asteroid.movement_speed_y;
+
+        asteroid.render_function = function(){
+
+            var destroyed = game.destroy_if_out_of_bounds(this);
+            if(destroyed){
+                spawn_asteroid()
+            }
+        }
+
+        asteroid.collision_function = function(other_collision_objects, this_collision_object){
+            //console.log(other_collision_objects)
+            for(var key in other_collision_objects){
+                var other_collision_object = other_collision_objects[key];
+
+                if(other_collision_object.game_object.name == "shot"){
+                    this.hue = other_collision_object.game_object.hue;
+                }
+            }
+        }
+    }
+
+    spawn_asteroid();
+    spawn_asteroid();
+    spawn_asteroid();
+    spawn_asteroid();
+    spawn_asteroid();
+    
+
+    var self = this;
+
+    document.onkeydown = function(){
+        var e = e || window.event;
+
+        self.keymap_keydownsups(e, self)
+    }
+    document.onkeyup = function(){
+        var e = e || window.event;
+
+        self.keymap_keydownsups(e, self)
+    }
+      console.log(this + "was constructed");
+    }
+    
+    keymap_keydownsups(e, self){
+        var o = this.keydownsups["keyCode_"+e.keyCode];
+        if(e.type == "keydown"){
+            o.down = true;
+            o.keydown_performance_now = performance.now();
+        }
+        if(e.type == "keyup"){
+            o.down = false;
+            o.keyup_performance_now = performance.now();
+        }
+    }
+
+    render(){
+
+        // this.pixel_drawer.clear() would pixel_drawer.point = []
+        // so we have to use clear_canvas() only since pixel_drawer.pixels is a Pixel_Drawer_Point_3_D.instances
+        // when a Pixel_Drawer_Point_3_D instance will be destroyed its automatically destroyed in the pixel_drawers.pixels array
+        this.pixel_drawer.clear_canvas()
+        
+        this.collision_array = []
+        //this._last_rendered_collision_objects = JSON.parse(JSON.stringify(this.collision_objects))
+        this._last_rendered_collision_objects = {...this.collision_objects}
+        this.collision_objects = {}
+
+        //console.log(this.render_id)
+
+        for(var key in Game_Object.instances){
+            var o = Game_Object.instances[key];
+
+            o.render_id ++; 
+            if(o.render_id_limit > 0 && o.render_id >= o.render_id_limit){
+                o.destroy();
+                //delete o;
+                continue;
+            }
+
+            //must be called before render_function
+            o.calculate_point_3_d();
+
+
+            o.render_function();
+
+            /**
+             * get the
+             *      translated
+             *      rotated
+             *      scaled (explosion effec)
+             *      etc...
+             * points
+             * */
+
+            // tthis points will not be the same as o.points_object.points ! var points = o.points_object.get_rotated_points_around_center_by_radians(o.rotation_point_3_d.x, o.points_object.points);
+            // this is dangerous because for example points_object.delete_point_by_point(point) won't work
+
+            for(var key in o.points_object.pixel_drawer_points){
+                
+                var point = o.points_object.pixel_drawer_points[key];
+                // actually this is only a translation
+                var x = parseInt(o.position_point_3_d.x + point.x);
+                var y = parseInt(o.position_point_3_d.y + point.y);
+
+                if(this.collision_objects[x+"|"+y] == undefined){
+                    this.collision_objects[x+"|"+y] = [];
+                } 
+                this.collision_objects[x+"|"+y].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
+
+                
+            }
+            
+            //o.render_function();
+            
+            
+        }
+        for(var key in this.collision_objects){
+            var cos_on_pixel = this.collision_objects[key];
+
+            for(var key in cos_on_pixel){
+                var co = cos_on_pixel[key];
+                var cos_on_pixel_without_co = cos_on_pixel.filter(asdf => asdf != co);
+                //console.log(cos_on_pixel);
+                // a collision of two pixels of the same object can occur since when an object is rotated two pixels may get 2.3¦4.4 and 2.1¦4.1 and then parseInt() since no subpixel rendering will make integers out of floats
+                var not_this_collision_object = cos_on_pixel.filter(asdf => asdf.game_object != co.game_object)
+                
+                if(cos_on_pixel.length > 1){
+                    co.game_object.collision_function(not_this_collision_object, co)
+                }
+                var point = co.point_relative_to_game_object;                
+                
+                var hue = point.hue || co.game_object.hue;
+                var brightness = point.brightness || co.game_object.brightness;
+
+                var x = parseInt(co.game_object.position_point_3_d.x + point.x);
+                var y = parseInt(co.game_object.position_point_3_d.y + point.y);
+
+                //this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
+            }
+        }
+
+        this.pixel_drawer.render_pixel_drawer_point_3_d_instances();
+    }
+
+    render_loop(){
+
+        //console.log("render_loop was called");
+
+        this.performance_now = performance.now();
+        this.render_delta_ms = Math.abs(this.performance_now - this.performance_then)
+
+        if(this.render_delta_ms > this.render_delta_limit_ms){
+            
+            this.render();
+            
+            this.performance_then = this.performance_now;
+        }
+
+        this.render_id = requestAnimationFrame(this.render_loop.bind(this));
+    }
+    /**
+     * honk honk 
+     * performs a so called vector addition
+     * @param {string} type 
+     */
+    start_rendering(type){
+        this.render_id = requestAnimationFrame(this.render_loop.bind(this));
+
+    }
+    stop_rendering(type){
+        cancelAnimationFrame(this.render_id)
+    }
+
+
+}
+
+window.g = new Game();
+g.start_rendering();
+
+
+    </script>
+
+
+
+</body>
+</html>

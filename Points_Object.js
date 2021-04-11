@@ -12,13 +12,15 @@ import { Pixel_Drawer_Point_3_D } from './Pixel_Drawer_Point_3_D.js';
 
 class Points_Object {
   
-  constructor(multiline_string){
+  constructor(multiline_string, hue = 1, brightness = 1){
       this.multiline_string = multiline_string;
       this._origin_pixel_drawer_points = []
       this.pixel_drawer_points = []
       this.width = 0;
       this.height = 0;
       this.depth = 0;
+      this.hue = hue;
+      this.brightness = brightness;
       
       this.z_layer_separator = "-";
 
@@ -111,7 +113,7 @@ class Points_Object {
         var character = characters[x];
         //space == false, any character == true
         if(character != " "){
-          points.push(new Pixel_Drawer_Point_3_D(x,y,z))
+          points.push(new Pixel_Drawer_Point_3_D(x,y,z, this.hue, this.brightness))
         }
       }
     }
@@ -246,6 +248,12 @@ class Points_Object {
       while (this.pixel_drawer_points[i] !== point) { i++; }
       this.pixel_drawer_points.splice(i, 1);
     };
+
+  destroy_points(){
+    for(var key in this.pixel_drawer_points){
+      this.pixel_drawer_points[key].destroy();
+    }
+  }
   
 }
 export { Points_Object } 
