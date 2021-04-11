@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+
+
+
+    window.points_object_2d_cube_multiline_string = ``
+    window.points_object_2d_cube = new Points_Object(
+`
+xxx
+x x
+xxx
+`
+)
+
+    
+
+
+    window.points_object_3_d_cube_multiline_string = ``
+    window.points_object_3_d_cube = new Points_Object(
+`
+x x
+ x 
+x x
+-
+ x 
+x x
+ x 
+-
+x x
+ x 
+x x
+`
+)
+
+
+
+
+
+class Game {
+  constructor(multiline_string){
+      
+    
+    this.pixel_drawer = new Pixel_Drawer(document.querySelector("canvas#game"));
+    var per_width = 10;
+    
+    var self = this;
+    // window.onresize = function(){
+        
+    //     var width = window.innerWidth / per_width;
+    //     var per_height = window.innerHeight / width;
+    //     this.pixel_drawer.scale_x = per_width;
+    //     this.pixel_drawer.scale_y = per_height;
+
+    // }
+        this.pixel_drawer.scale_x = 10;
+        this.pixel_drawer.scale_y = 10;
+
+    this.render_id = 0;
+    this.fps = 60;
+    this.render_delta_limit_ms = 1000/this.fps;
+    this.render_delta_ms = 0;
+    this.performance_now = performance.now();
+    this.performance_then = performance.now();
+    this.keydownsups = {};
+
+    /**
+     * used for detecting collisions
+     * [
+     *       if a array has two items a collision has occured
+     *  [[x0] [x1, x1]] y 1  
+     *  []
+     *  [] 
+     * ] */
+    this.collision_array = [];
+    this.collision_object = {};
+
+
+    this.brick_multiline_strings = [
+`
+x 
+xx
+x 
+`, 
+`
+x
+x
+x
+x
+`,
+`
+x 
+xx
+ x
+`,
+`
+x 
+x 
+xx
+`,
+`
+xx
+xx
+`    
+
+    ]
+    var game = this;
+
+
+    this.wall = new Game_Object(
+`
+xxxxxxxxxx
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+x        x
+xxxxxxxxxx`);
+
+this.wall.render_function = function(){
+    for(var y = 1; y < this.points_object.height-1; y++){
+        var row_complete = true; 
+        var to_destroy = [];
+
+
+        for(var x = 1; x < this.points_object.width-1; x++){
+            if(!row_complete){
+                continue;
+            }
+            console.log(this.render_id);
+            
+            console.log(game._last_rendered_collision_object);
+
+            to_destroy.push(game._last_rendered_collision_object[x+"|"+y])
+
+            if(game._last_rendered_collision_object[x+"|"+y] == undefined){
+                row_complete = false;
+                continue;
+            }
+            if(game._last_rendered_collision_object[x+"|"+y][0].onground == false){
+                row_complete = false;
+                continue;
+            }
+        }
+        console.log("row_complete");
+        console.log(row_complete);
+        if(row_complete){
+
+            for(var key in to_destroy){
+                var o = to_destroy[key][0];
+                o.destroy();
+            }
+            for(var key in Game_Object.instances){
+                var o = Game_Object.instances[key];
+                if(o == this){
+                    continue;
+                }
+                if(o.position_point_3_d.y <= y){
+                    o.position_point_3_d.y+=1; 
+                }
+            }
+        }
+    }
+}
+
+
+this.spawn_brick = function(){
+    var rand_brick_multiline_string = this.brick_multiline_strings[Math.floor(Math.random() * this.brick_multiline_strings.length)];
+    //for testing
+    var rand_brick_multiline_string = this.brick_multiline_strings[4];
+    var points_object = new Points_Object(rand_brick_multiline_string);
+
+
+    var brick_render_function = function(){
+        if(!this.onground){
+
+        this.position_velocity_point_3_d.y = 0.05;
+
+
+        if (game.keydownsups["keyCode_38"]) {
+            // up arrow
+            //rotate
+        }
+        if (game.keydownsups["keyCode_40"]) {
+            // down arrow
+            this.position_velocity_point_3_d.y = 0.5;
+
+        }
+        if (game.keydownsups["keyCode_37"]) {
+            if(this.position_point_3_d.x > 1){
+                // left arrow
+                this.position_point_3_d.x -=0.1;
+            }
+        }
+        if (game.keydownsups["keyCode_39"]) {
+        // right arrow
+        this.position_point_3_d.x +=0.1;
+
+        }
+
+    }
+    }
+var brick_collision_function = function(){
+    
+    var brick_group_gos = Game_Object.instances.filter(asdf => asdf.brick_group_name == this.brick_group_name)
+
+    for(var key in brick_group_gos){
+        var brick_group_go = brick_group_gos[key];
+
+        brick_group_go.position_point_3_d.x = brick_group_go._last_rendered_position_point_3_d.x;
+        brick_group_go.position_point_3_d.y = brick_group_go._last_rendered_position_point_3_d.y;
+
+        brick_group_go.position_velocity_point_3_d.y = 0;
+
+        brick_group_go.onground = true;
+        brick_group_go.collision_function = function(){}
+    }
+
+    //game.spawn_brick();
+    // disable further collision function on this object
+}  
+        var hue = Math.random()*360;
+
+
+    for(var key in points_object.points){
+        var po = points_object.points[key]
+        var go = new Game_Object();
+
+        go.brick_group_name = "brick_"+game.render_id;
+
+        go.position_point_3_d.x = 1 + po.x;
+        go.position_point_3_d.y = 1 + po.y;
+        go.position_velocity_point_3_d.y = 1;
+        go.hue = hue; 
+        go.render_function = brick_render_function;
+        go.collision_function = brick_collision_function;
+
+    }
+
+}
+
+this.spawn_brick();
+
+
+    var self = this;
+
+    document.onkeydown = function(){
+        var e = e || window.event;
+
+        self.keymap_keydownsups(e, self)
+    }
+    document.onkeyup = function(){
+        var e = e || window.event;
+
+        self.keymap_keydownsups(e, self)
+    }
+      console.log(this + "was constructed");
+    }
+    
+    keymap_keydownsups(e, self){
+        if(e.type == "keydown"){
+            self.keydownsups["keyCode_"+e.keyCode] = true;
+        }
+        if(e.type == "keyup"){
+            self.keydownsups["keyCode_"+e.keyCode] = false;
+        }
+    }
+
+    render(){
+        this.pixel_drawer.clear()
+        this.collision_array = []
+        this._last_rendered_collision_object = JSON.parse(JSON.stringify(this.collision_object));
+        this.collision_object = {}
+
+        //console.log(this.render_id)
+
+        for(var key in Game_Object.instances){
+            var o = Game_Object.instances[key];
+            var hue = o.hue || 1;
+            var brightness = o.brightness || 1;
+            o.render_id ++; 
+            if(o.render_id_limit > 0 && o.render_id >= o.render_id_limit){
+                o.destroy();
+                //delete o;
+                continue;
+            }
+
+            //must be called before render_function
+            o.calculate_point_3_d();
+
+
+            o.render_function();
+
+            //detect collisions 
+            // detect collisions only if position of object has changed 
+            // this will prevent the collision firing multiple times although the position of objects would not have changed
+            // when velocity < 1 zb velocity = 0.1
+            // since subpixel rendering not possible
+
+            // if(o._last_rendered_position_point_3_d.int_parsed_to_x_y_string() != o.position_point_3_d.int_parsed_to_x_y_string()){
+                
+            //     for(var key2 in Game_Object.instances){
+            //         var o2 = Game_Object.instances[key2]
+            //         if(o2 == o){
+            //             continue;
+            //         }
+
+            //         for(var key3 in o.points_object.points){
+            //             var o_point = o.points_object.points[key3];
+                    
+            //             for(var key4 in o2.points_object.points){
+            //                 var o2_point = o.points_object.points[key4];
+                            
+            //                 if( 
+            //                     parseInt(o.position_point_3_d.x + o_point.position_point_3_d.x) == parseInt(o2.position_point_3_d.x + o2_point.position_point_3_d.x)
+            //                     && 
+            //                     parseInt(o.position_point_3_d.y + o_point.position_point_3_d.y) == parseInt(o2.position_point_3_d.y + o2_point.position_point_3_d.y)
+            //                     //o_point.position_point_3_d.int_parsed_to_x_y_string() == o2_point.position_point_3_d.int_parsed_to_x_y_string() not working since point_
+            //                     ){
+            //                     var collision_sender = o;
+            //                     var collision_receiver = o2;
+            //                     o.collision_function(collision_sender, collision_receiver);
+            //                     o2.collision_function(collision_sender, collision_receiver); 
+            //                 }
+                            
+            //             }
+
+            //         }
+
+            //         // old check only position of objects
+            //         // if( o.position_point_3_d.int_parsed_to_x_y_string() == o2.position_point_3_d.int_parsed_to_x_y_string()){
+            //         //     var collision_sender = o;
+            //         //     var collision_receiver = o2;
+            //         //     o.collision_function(collision_sender, collision_receiver);
+            //         //     o2.collision_function(collision_sender, collision_receiver);
+            //         // }
+            //     }
+
+            // }
+            if(o.points_object){
+
+                for(var key in o.points_object.points){
+                    var point = o.points_object.points[key];
+                    var x = parseInt(o.position_point_3_d.x + point.x);
+                    var y = parseInt(o.position_point_3_d.y + point.y);
+                    
+                    if(this.collision_object[x+"|"+y] == undefined){
+                        this.collision_object[x+"|"+y] = [];
+                    } 
+                    this.collision_object[x+"|"+y].push(o)
+                    console.log(this.collision_object[x+"|"+y].length);
+                    
+                    if(this.collision_object[x+"|"+y].length>1){
+                        for(var key5 in this.collision_object[x+"|"+y]){
+                            var co = this.collision_object[x+"|"+y][key5];
+                            if(co == o){
+                                continue;
+                            }
+                            o.collision_function(co);
+                            co.collision_function(o);
+    
+                        }
+    
+                    }
+    
+    
+                    this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
+                }
+            }
+
+            //o.render_function();
+
+
+        }
+
+        this.pixel_drawer.render();
+    }
+
+    render_loop(){
+
+        //console.log("render_loop was called");
+
+        this.performance_now = performance.now();
+        this.render_delta_ms = Math.abs(this.performance_now - this.performance_then)
+
+        if(this.render_delta_ms > this.render_delta_limit_ms){
+            
+            this.render();
+            
+            this.performance_then = this.performance_now;
+        }
+
+        this.render_id = requestAnimationFrame(this.render_loop.bind(this));
+    }
+    /**
+     * honk honk 
+     * performs a so called vector addition
+     * @param {string} type 
+     */
+    start_rendering(type){
+        this.render_id = requestAnimationFrame(this.render_loop.bind(this));
+
+    }
+    stop_rendering(type){
+        cancelAnimationFrame(this.render_id)
+    }
+
+
+}
+
+window.g = new Game();
+g.start_rendering();
+
+
+    </script>
+
+
+
+</body>
+</html>
