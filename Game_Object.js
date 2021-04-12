@@ -34,15 +34,6 @@ class Game_Object {
       this.position_velocity_point_3_d = new Point_3_D(0,0,0);
       this.position_acceleration_point_3_d = new Point_3_D(0,0,0);
 
-      /**
-       * unfortunately cloning an object without reference is not that easy
-       * spreading does not work this._last_rendered_position_point_3_d = {...this.position_point_3_d}
-       * 
-       * neither does Object.assign({}, this.position_point_3_d)
-       * 
-       * Object.create(origin_object); does still not work its still a reference 
-       */
-      this._last_rendered_position_point_3_d = Object.create(this.position_point_3_d);
       //rotation
       this.rotation_point_3_d = new Point_3_D(0,0,0);
       this.rotation_velocity_point_3_d = new Point_3_D(0,0,0);
@@ -70,6 +61,16 @@ class Game_Object {
       this._hue = val;
       for(var key in this.points_object.pixel_drawer_points){
         this.points_object.pixel_drawer_points[key].hue = val;
+      }
+      
+    }
+    get brightness(){
+      return this._hue;
+    }
+    set brightness(val){
+      this._brightness = val;
+      for(var key in this.points_object.pixel_drawer_points){
+        this.points_object.pixel_drawer_points[key].brightness = val;
       }
       
     }
@@ -112,11 +113,7 @@ class Game_Object {
       if(!type){
         var types = ["position", "rotation", "scale"];
       }
-      // set last rendered point 
-      
-      this._last_rendered_position_point_3_d.x = this.position_point_3_d.x
-      this._last_rendered_position_point_3_d.y = this.position_point_3_d.y
-      this._last_rendered_position_point_3_d.z = this.position_point_3_d.z
+
 
       for(var key in types){
         var type = types[key];
@@ -137,9 +134,23 @@ class Game_Object {
 
       }
 
+      // here we have two ways of applying the transformations to the points_object
+      // but acutally we should first let the programmer make some changes on the for example position_point_3_d.x y or z to have later access to the correct delta
+
+        // A: we use the origin points of the objedct and apply the absolute value of the transformation
+        //this.transform_points_by_absolute();
+        // B: we use the actual points of the object and apply the delta value of the transformation 
+        //this.transform_points_by_delta(); 
+
+    }
+    transform_points_by_absolute(){
+
       // now translate, rotate or scale the pixel object
 
       //first rotate the points, take the _orign points for that
+      //json copy would remove the getters and setters from point_3_d
+      //var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(this.rotation_point_3_d.x, this.points_object._origin_pixel_drawer_points_json_copy)
+      
       var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(this.rotation_point_3_d.x, this.points_object._origin_pixel_drawer_points_json_copy)
 
       // continue by mmanipulating the scale 
@@ -153,14 +164,21 @@ class Game_Object {
       // now we have to apply the transformation to the actuall points
       for(var k in translated_points){
         var p = translated_points[k];
-        this.points_object.pixel_drawer_points[k].x = p.x;
-        this.points_object.pixel_drawer_points[k].y = p.y;
-        this.points_object.pixel_drawer_points[k].z = p.z;
+        //since we are using json copied points we have to use the "private" props with the underline prefix '_...'
+        this.points_object.pixel_drawer_points[k].x = p._x;
+        this.points_object.pixel_drawer_points[k].y = p._y;
+        this.points_object.pixel_drawer_points[k].z = p._z;
       }
 
-
     }
-
+    transform_points_by_delta(){
+      
+     //this.points_object.rotate_points_around_center_by_radians(this.rotation_point_3_d.delta_x)
+      // i dont know yet what axis to take for a rotation from top down view    
+      //this.points_object.get_scaled_points(this.scale_point_3_d.delta_x, this.scale_point_3_d.delta_y,this.points_object.pixel_drawer_points);
+      //trying only translation
+      this.points_object.translate_points(this.position_point_3_d.delta_x, this.position_point_3_d.delta_y)
+    }
 }
 Game_Object.prototype.destroy = function () {
   var i = 0;

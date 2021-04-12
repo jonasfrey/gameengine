@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Game} from './Game.js';
+    
+    window.g = new Game()
+    var game = window.g;
+
+    
+    game.setup_stuff = function(){
+        this.pixel_drawer.scale_x = 10;
+        this.pixel_drawer.scale_y = 10;
+        //this.pixel_drawer.parseInt_rendering = true;
+        Point_3_D.parse_to_integer = true;
+
+    }
+    game.setup_stuff();
+    
+
+    //spawn wall
+    game.wall_width = 10+2;
+    game.wall_height = 20+2;
+    game.wall_multiline_string = ``;
+
+    for(var y = 0; y<game.wall_height; y++){
+        for(var x = 0; x<game.wall_width; x++){
+            if(x == 0 || x == game.wall_width-1 || y == 0 || y== game.wall_height-1){
+                game.wall_multiline_string += "x"
+            }else{
+                game.wall_multiline_string += " "
+            }
+        }
+        game.wall_multiline_string += "\n"   
+    }
+
+    game.wall = new Game_Object(game.wall_multiline_string);
+    game.wall.position_point_3_d.x = - game.wall.points_object.width/2;
+    game.wall.position_point_3_d.y = - game.wall.points_object.height/2;
+
+    game.wall.render_function = function(){
+    for(var y = 1; y < this.points_object.height-1; y++){
+        var row_complete = true; 
+        var x_y_to_destroy = {};
+
+
+        for(var x = 1; x < this.points_object.width-1; x++){
+            if(!row_complete){
+                continue;
+            }
+
+            x_y_to_destroy[x+"|"+y] = game._last_rendered_collision_objects[x+"|"+y]
+
+            if(game._last_rendered_collision_objects[x+"|"+y] == undefined){
+                row_complete = false;
+                continue;
+            }
+            if(game._last_rendered_collision_objects[x+"|"+y][0].game_object.onground == false){
+                row_complete = false;
+                continue;
+            }
+        }
+
+        if(row_complete){
+
+            for(var k2 in x_y_to_destroy){
+
+                var go = x_y_to_destroy[k2][0].game_object;
+                var p = x_y_to_destroy[k2][0].point_relative_to_game_object;
+
+                go.points_object.delete_point_by_point(p)
+            }
+
+            for(var key in Game_Object.instances){
+                var o = Game_Object.instances[key];
+
+                if(o == this){
+                    continue;
+                }
+                // for(var k2 in x_y_to_destroy){
+                //     debugger;
+                //     var go = x_y_to_destroy[k2][0].game_object;
+                //     var p = x_y_to_destroy[k2][0].point_relative_to_game_object;
+
+                //     o.delete_point_by_object(p)
+                // }
+                if(o.position_point_3_d.y <= y){
+                    o.position_point_3_d.y+=1; 
+                }
+            }
+        }
+    }
+}
+
+    game.wall.hue = 111;
+    game.wall.brightness = 0.5;
+
+
+
+    //spawn brick
+    game.brick_multiline_strings = [
+`
+x 
+xx
+x 
+`, 
+`
+x
+x
+x
+x
+`,
+`
+x 
+xx
+ x
+`,
+`
+x 
+x 
+xx
+`,
+`
+xx
+xx
+`]
+    game.spawn_brick = function(){
+        
+
+        var rand_brick_multiline_string = this.brick_multiline_strings[Math.floor(Math.random() * this.brick_multiline_strings.length)];
+        //for testing
+        //var rand_brick_multiline_string = `\nxx\nxx`;
+        //var rand_brick_multiline_string = this.brick_multiline_strings[4];
+        var brick = new Game_Object(rand_brick_multiline_string);
+        this.brick = brick;
+        brick.hue = Math.random()*360
+
+        brick.position_point_3_d.x = this.wall.position_point_3_d.x + this.wall_width / 2;
+        brick.position_point_3_d.y = this.wall.position_point_3_d.y + 1;
+        brick.position_velocity_point_3_d.y = 0.05;
+        
+        //custom prop
+        brick.onground = false;
+
+        brick.render_function = function(){
+            
+            if(this.points_object.points.length < 1){
+                this.destroy();
+            }
+
+            //check if brick would collide 
+
+            if(!this.onground){
+
+                this.position_velocity_point_3_d.y = 0.05;
+
+                if (game.keydownsups["keyCode_38"].down) {
+
+                    //check if rotation is even possible , if to close to wall rotation should not be possible
+                    var max = Math.max(this.points_object.width, this.points_object.height);
+                    // if(
+                    //     this.position_point_3_d.x >= max-1 
+                    //     &&
+                    //     this.position_point_3_d.x <= game.wall_width  - max
+                    //     &&
+                    //     this.position_point_3_d.y >= max 
+                    //     &&
+                    //     this.position_point_3_d.y <= game.wall_height - max
+                    // ){
+                        // up arrow
+                        if(!game.keydownsups["keyCode_38"].down_lock){
+
+                            this.rotation_point_3_d.x += Math.PI*2/4;
+
+                            game.keydownsups["keyCode_38"].down_lock = true;
+                        }
+                    //}
+                }else{
+                    //when key released 
+                    game.keydownsups["keyCode_38"].down_lock = false;
+                }
+
+                if (game.keydownsups["keyCode_40"].down) {
+                    // down arrow
+                    this.position_velocity_point_3_d.y = 0.5;
+                }
+
+                if (game.keydownsups["keyCode_37"].down) {
+                    //if(this.position_point_3_d.x > 2){
+                        // left arrow
+                        if(!game.keydownsups["keyCode_37"].down_lock){
+
+                            this.position_point_3_d.x -=1;
+                            game.keydownsups["keyCode_37"].down_lock = true;
+                        }else{
+                            //optional movement speed when stayed on key
+                            this.position_point_3_d.x -=0.1;
+                        }
+                    //}
+                }else{
+                    game.keydownsups["keyCode_37"].down_lock = false;
+                }
+                if (game.keydownsups["keyCode_39"].down) {
+                    //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
+        
+                        // right arrow
+                        if(!game.keydownsups["keyCode_39"].down_lock){
+
+                            this.position_point_3_d.x +=1;
+                            game.keydownsups["keyCode_39"].down_lock = true;
+                        }else{
+                            //optional movement speed when stayed on key
+                            this.position_point_3_d.x +=0.1;
+                        }
+                    //}
+                    
+                }else{
+                    game.keydownsups["keyCode_39"].down_lock = false;
+                }
+
+            }else{
+                this.brightness = 0.5;
+            }
+        }
+
+        // brick.collision_function = function(other_collision_objects, this_collision_object){
+        //     // only do stuff if the brick 
+        //     console.log(other_collision_objects);
+
+        //     //reset position to last rendered one, since the collision function is called after the calculate_point_3_d function 
+        //     this.position_point_3_d.x = this._last_rendered_position_point_3_d.x;
+        //     this.position_point_3_d.y = this._last_rendered_position_point_3_d.y;
+        //     //remove velocity 
+        //     this.position_velocity_point_3_d.y = 0;
+
+        //     // a hacky workaround , set brightiness to 0 hide collision, brightness will be set to 0.5 in the next render function since onground == true
+        //     this.brightness = 0;
+            
+        //     this.onground = true;
+        //     game.spawn_brick();
+        //     // disable further collision function on this object
+        //     this.collision_function = function(){}
+        // }
+
+    }
+
+    game.spawn_brick();
+    game.start_rendering();
+
+
+
+
+    </script>
+
+
+
+</body>
+</html>

@@ -308,75 +308,75 @@ class Game {
 
     var game = this;
 
-    // this.snake = new Game_Object();
-    // this.snake.name = "snake";
-    // this.snake.velocity = 0.1
-    // this.snake.position_velocity_point_3_d = new Point_3_D( this.snake.velocity,0,0)
-    // this.snake.limbs = []
+    this.snake = new Game_Object();
+    this.snake.name = "snake";
+    this.snake.velocity = 0.1
+    this.snake.position_velocity_point_3_d = new Point_3_D(0,0,0)
+    this.snake.limbs = []
 
-    // this.snake.add_limb = function(){
-    //     console.log("add_limb called");
-    //     var limb = new Game_Object();
-    //     limb.name = "limb"
-    //     limb.hue = Math.random()*360;
-    //     limb.position_point_3_d = Object.create(this.position_point_3_d);
-    //     //Object.assign({}, this.position_point_3_d)// {...this.position_point_3_d}
-    //     //limb.position_velocity_point_3_d = {...this.position_velocity_point_3_d}
-    //     //limb.position_acceleration_point_3_d = {...this.position_velocity_point_3_d}
-    //     this.limbs.push(limb)
-    // }
+    this.snake.add_limb = function(){
+        console.log("add_limb called");
+        var limb = new Game_Object();
+        limb.name = "limb"
+        limb.hue = Math.random()*360;
+        limb.position_point_3_d = Object.create(this.position_point_3_d);
+        //Object.assign({}, this.position_point_3_d)// {...this.position_point_3_d}
+        //limb.position_velocity_point_3_d = {...this.position_velocity_point_3_d}
+        //limb.position_acceleration_point_3_d = {...this.position_velocity_point_3_d}
+        this.limbs.push(limb)
+    }
 
-    // this.snake.render_function = function(){
+    this.snake.render_function = function(){
 
-    //         if (game.keydownsups["keyCode_38"]) {
-    //             // up arrow
-    //                 this.position_velocity_point_3_d.x = 0
-    //                 this.position_velocity_point_3_d.y = -this.velocity
-    //                 this.position_velocity_point_3_d.z = 0
-    //         }
-    //         else if (game.keydownsups["keyCode_40"]) {
-    //             // down arrow
-    //             this.position_velocity_point_3_d.x = 0
-    //                 this.position_velocity_point_3_d.y = this.velocity
-    //                 this.position_velocity_point_3_d.z = 0
+            if (game.keydownsups["keyCode_38"].down) {
+                // up arrow
+                    this.position_velocity_point_3_d.x = 0
+                    this.position_velocity_point_3_d.y = -this.velocity
+                    this.position_velocity_point_3_d.z = 0
+            }
+            else if (game.keydownsups["keyCode_40"].down) {
+                // down arrow
+                this.position_velocity_point_3_d.x = 0
+                    this.position_velocity_point_3_d.y = this.velocity
+                    this.position_velocity_point_3_d.z = 0
 
-    //         }
-    //         else if (game.keydownsups["keyCode_37"]) {
-    //         // left arrow
-    //         this.position_velocity_point_3_d.x = -this.velocity
-    //                 this.position_velocity_point_3_d.y = this.velocity
-    //                 this.position_velocity_point_3_d.z = 0
-    //         }
-    //         else if (game.keydownsups["keyCode_39"]) {
-    //         // right arrow
-    //         this.position_velocity_point_3_d.x = this.velocity
-    //                 this.position_velocity_point_3_d.y = 0
-    //                 this.position_velocity_point_3_d.z = 0
-    //         }
-    //         if(game.keydownsups["keyCode_65"]){
+            }
+            else if (game.keydownsups["keyCode_37"].down) {
+            // left arrow
+            this.position_velocity_point_3_d.x = -this.velocity
+                    this.position_velocity_point_3_d.y = this.velocity
+                    this.position_velocity_point_3_d.z = 0
+            }
+            else if (game.keydownsups["keyCode_39"].down) {
+            // right arrow
+            this.position_velocity_point_3_d.x = this.velocity
+                    this.position_velocity_point_3_d.y = 0
+                    this.position_velocity_point_3_d.z = 0
+            }
+            if(game.keydownsups["keyCode_65"].down){
 
-    //             this.velocity = 0.5
-    //         }
+                this.velocity = 0.5
+            }
 
-    //         if(this._last_rendered_position_point_3_d.int_parsed_to_x_y_string() != this.position_point_3_d.int_parsed_to_x_y_string()){
+            if(this._last_rendered_position_point_3_d.int_parsed_to_x_y_string() != this.position_point_3_d.int_parsed_to_x_y_string()){
 
-    //             for(var key in this.limbs){
-    //                 var index = this.limbs.length-1  - key;
-    //                 var limb = this.limbs[index];
-    //                 var limb_before = this.limbs[index-1]
-    //                 if(!limb_before){
-    //                     limb_before = this
-    //                 }
-    //                 if(limb_before == undefined){
-    //                     debugger;
-    //                 }
+                for(var key in this.limbs){
+                    var index = this.limbs.length-1  - key;
+                    var limb = this.limbs[index];
+                    var limb_before = this.limbs[index-1]
+                    if(!limb_before){
+                        limb_before = this
+                    }
+                    if(limb_before == undefined){
+                        debugger;
+                    }
                     
-    //                 limb.position_point_3_d = Object.create(limb_before.position_point_3_d);
+                    limb.position_point_3_d = Object.create(limb_before.position_point_3_d);
 
-    //                 // limb.position_point_3_d = {...limb_before.position_point_3_d}
-    //             }
-    //         }
-    // }
+                    // limb.position_point_3_d = {...limb_before.position_point_3_d}
+                }
+            }
+    }
 
     // /**
     //  * 
@@ -402,221 +402,6 @@ class Game {
     //     this.position_point_3_d.y = parseInt(Math.random()*game.pixel_drawer.pixel_grid_height)
     // }
 
-
-    this.spaceship = new Game_Object(`\n x \nxxx`);
-    this.spaceship.hue = 243
-    this.spaceship.name = "spaceship";
-    this.spaceship.position_point_3_d.x = 10;
-    this.spaceship.position_point_3_d.y = 23;
-    this.spaceship.movement_velocity = 1;
-    this.spaceship.weapons = [
-        "straight",
-        "circular",
-        "sine"
-    ], 
-    this.spaceship.weapon_index = 0;
-
-    this.spaceship.render_function = function(){
-
-            if (game.keydownsups["keyCode_38"]) {
-                // up arrow
-                this.position_point_3_d.y -= this.movement_velocity;
-
-                this.weapon_index = (this.weapon_index + 1) % this.weapons.length
-                this.weapon = this.weapons[this.weapon_index]
-                this.hue = 1 / this.weapons.length * this.weapon_index * 360;
-            }
-            else if (game.keydownsups["keyCode_40"]) {
-                // down arrow
-                this.position_point_3_d.y+=this.movement_velocity;
-            }
-            if (game.keydownsups["keyCode_37"]) {
-                // left arrow
-                this.position_point_3_d.x-=this.movement_velocity;
-            }
-            if (game.keydownsups["keyCode_39"]) {
-                // right arrow
-                this.position_point_3_d.x+=this.movement_velocity;
-            }
-            if (game.keydownsups["keyCode_32"]) {
-
-
-                if(this.weapon == "straight"){
-                    
-                    var shot = new Game_Object();
-                    // space bar
-                    shot.hue = this.hue;
-                    shot.name = "shot"
-                    shot.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-                    shot.position_point_3_d.y = this.position_point_3_d.y;
-                    shot.position_velocity_point_3_d.y = -1;
-
-                shot.render_function = function(){
-                    
-                    //this.hue = parseInt(this.render_id % 360);
-                    if(
-                        this.position_point_3_d.x < 0 ||
-                        this.position_point_3_d.y < 0 ||
-                        this.position_point_3_d.x >= game.pixel_drawer.pixel_grid_width ||
-                        this.position_point_3_d.y >= game.pixel_drawer.pixel_grid_height 
-                    ){
-                        this.destroy();
-                    }
-                    
-                }
-
-                }
-                if(this.weapon == "circular"){
-                    var shot = new Game_Object();
-                    // space bar
-                    shot.hue = this.hue;
-                    shot.name = "shot"
-                    shot.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-                    shot.position_point_3_d.y = this.position_point_3_d.y;
-                    shot.position_velocity_point_3_d.y = -1;
-
-                shot.render_function = function(){
-                    
-                    //this.hue = parseInt(this.render_id % 360);
-                    if(
-                        this.position_point_3_d.x < 0 ||
-                        this.position_point_3_d.y < 0 ||
-                        this.position_point_3_d.x >= game.pixel_drawer.pixel_grid_width ||
-                        this.position_point_3_d.y >= game.pixel_drawer.pixel_grid_height 
-                    ){
-                        this.destroy();
-                    }
-                    
-                }
-
-                    var shot2 = new Game_Object();
-                    // space bar
-                    shot2.hue = this.hue;
-                    shot2.name = "shot"
-                    shot2.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-                    shot2.position_point_3_d.y = this.position_point_3_d.y;
-                    shot2.position_velocity_point_3_d.y = -1;
-                    shot2.position_velocity_point_3_d.x = -0.5;
-                    shot2.render_function = shot.render_function;
-
-                    
-
-                    var shot3 = new Game_Object();
-                    // space bar
-                    shot3.hue = this.hue;
-                    shot3.name = "shot"
-                    shot3.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-                    shot3.position_point_3_d.y = this.position_point_3_d.y;
-                    shot3.position_velocity_point_3_d.y = -1;
-                    shot3.position_velocity_point_3_d.x = 0.5;
-                    shot3.render_function = shot.render_function;
-
-                    
-
-                }
-                if(this.weapon == "sine"){
-                    
-                    var shot = new Game_Object();
-                    // space bar
-                    shot.hue = this.hue;
-                    shot.name = "shot"
-                    shot.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-                    shot.position_point_3_d.y = this.position_point_3_d.y;
-                    shot.position_velocity_point_3_d.y = -1;
-
-                shot.render_function = function(){
-                    
-                    //this.position_point_3_d.x = this.position_point_3_d.x + Math.sin((this.render_id)*0.3)*2;
-                    //this.position_point_3_d.x = this.position_point_3_d.x + Math.sin(Math.PI + this.render_id *0.5)*1 - 1;
-                    this.position_point_3_d.x = this.position_point_3_d.x + Math.sin( Math.PI * 2 / 4*2.8  + this.render_id *0.5)*2;
-
-                    //this.hue = parseInt(this.render_id % 360);
-                    if(
-                        this.position_point_3_d.x < 0 ||
-                        this.position_point_3_d.y < 0 ||
-                        this.position_point_3_d.x >= game.pixel_drawer.pixel_grid_width ||
-                        this.position_point_3_d.y >= game.pixel_drawer.pixel_grid_height 
-                    ){
-                        this.destroy();
-                    }
-                    
-                }
-
-                }
-
-
-            }
-
-    }
-    
-    this.spawn_enemy = function(){
-        this.enemy = new Game_Object(`\nxxx\n x`);
-        this.enemy.position_point_3_d.x = Math.random()*20
-        this.enemy.position_point_3_d.y = Math.random()*10
-        this.enemy.next_random_render_id = Math.random()*30;
-
-        this.enemy.hue = 30;
-        this.enemy.life = 1;
-        this.enemy.hits = 0;
-        this.enemy.name = "enemy"
-        this.enemy.explosion_function = function(){}
-        
-        this.enemy.render_function = function(){
-            
-            this.brightness = this.life;
-            
-            this.position_point_3_d.x+= Math.sin((this.render_id)*0.05)*1;
-
-            
-            if(this.render_id >= this.next_random_render_id){
-                this.next_random_render_id =  this.render_id + Math.random()*30; 
-                this.shoot();
-            }
-            this.explosion_function();
-        }
-        this.enemy.shoot = function(){
-
-            var shot = new Game_Object();
-            shot.hue = this.hue;
-            shot.name = "shot_enemy"
-            shot.position_point_3_d.x = this.points_object.relative_center_x + this.position_point_3_d.x;
-            shot.position_point_3_d.y = this.position_point_3_d.y;
-            shot.position_velocity_point_3_d.y = 1;
-            shot.render_function = function(){
-                if(
-                    this.position_point_3_d.x < 0 ||
-                    this.position_point_3_d.y < 0 ||
-                    this.position_point_3_d.x >= game.pixel_drawer.pixel_grid_width ||
-                    this.position_point_3_d.y >= game.pixel_drawer.pixel_grid_height 
-                ){
-                    this.destroy();
-                }
-            }
-        }
-
-        this.enemy.collision_function = function(other_object){
-
-            if(other_object.name == "shot"){
-                this.hits += 1;
-                this.life = 1 / this.hits;
-
-            }
-
-            if(this.hits > 4){
-                this.render_id_limit =  this.render_id + 50;
-                this.explosion_function = function(){
-                    this.brightness = Math.sin(this.render_id) + 1;
-                    var explosion_factor = (this.render_id / this.render_id_limit)*1;
-                    this.points_object.points = this.points_object.get_transformed_points(1.05,0,0,1.05)
-                }
-                this.collision_function = function(){}
-            }
-        }
-        
-
-    }
-
-    this.spawn_enemy();
 
     
     var self = this;
@@ -666,52 +451,6 @@ class Game {
 
             o.render_function();
 
-            //detect collisions 
-            // detect collisions only if position of object has changed 
-            // this will prevent the collision firing multiple times although the position of objects would not have changed
-            // when velocity < 1 zb velocity = 0.1
-            // since subpixel rendering not possible
-
-            // if(o._last_rendered_position_point_3_d.int_parsed_to_x_y_string() != o.position_point_3_d.int_parsed_to_x_y_string()){
-                
-            //     for(var key2 in Game_Object.instances){
-            //         var o2 = Game_Object.instances[key2]
-            //         if(o2 == o){
-            //             continue;
-            //         }
-
-            //         for(var key3 in o.points_object.points){
-            //             var o_point = o.points_object.points[key3];
-                    
-            //             for(var key4 in o2.points_object.points){
-            //                 var o2_point = o.points_object.points[key4];
-                            
-            //                 if( 
-            //                     parseInt(o.position_point_3_d.x + o_point.position_point_3_d.x) == parseInt(o2.position_point_3_d.x + o2_point.position_point_3_d.x)
-            //                     && 
-            //                     parseInt(o.position_point_3_d.y + o_point.position_point_3_d.y) == parseInt(o2.position_point_3_d.y + o2_point.position_point_3_d.y)
-            //                     //o_point.position_point_3_d.int_parsed_to_x_y_string() == o2_point.position_point_3_d.int_parsed_to_x_y_string() not working since point_
-            //                     ){
-            //                     var collision_sender = o;
-            //                     var collision_receiver = o2;
-            //                     o.collision_function(collision_sender, collision_receiver);
-            //                     o2.collision_function(collision_sender, collision_receiver); 
-            //                 }
-                            
-            //             }
-
-            //         }
-
-            //         // old check only position of objects
-            //         // if( o.position_point_3_d.int_parsed_to_x_y_string() == o2.position_point_3_d.int_parsed_to_x_y_string()){
-            //         //     var collision_sender = o;
-            //         //     var collision_receiver = o2;
-            //         //     o.collision_function(collision_sender, collision_receiver);
-            //         //     o2.collision_function(collision_sender, collision_receiver);
-            //         // }
-            //     }
-
-            // }
 
             for(var key in o.points_object.points){
                 var point = o.points_object.points[key];
@@ -736,8 +475,9 @@ class Game {
                     }
 
                 }
-
-                this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
+                var pxl = {x:x , y: y, hue: hue, brightness: brightness}
+                console.log(pxl)
+                this.pixel_drawer.add_pixel(pxl)
             }
 
 

@@ -13,6 +13,7 @@ import { Pixel_Drawer_Point_3_D } from './Pixel_Drawer_Point_3_D.js';
 class Points_Object {
   
   constructor(multiline_string, hue = 1, brightness = 1){
+
       this.multiline_string = multiline_string;
       this._origin_pixel_drawer_points = []
       this.pixel_drawer_points = []
@@ -23,10 +24,18 @@ class Points_Object {
       this.brightness = brightness;
       
       this.z_layer_separator = "-";
-
+      
       this.pixel_drawer_points = this.get_points_by_multiline_string(this.multiline_string);
+      //reference to pixel_drawer_points
+      this.points = this.pixel_drawer_points;
 
       this._origin_pixel_drawer_points_json_copy = this.json_copy(this.pixel_drawer_points)
+
+      this._origin_pixel_drawer_points_spread_copy = []
+      
+      for(var key in this.pixel_drawer_points){
+        this._origin_pixel_drawer_points_spread_copy.push({...this.pixel_drawer_points[key]})
+      }
       //this._original_points = JSON.parse(JSON.stringify(this.points))
 
       console.log(this + "was constructed");
@@ -162,20 +171,24 @@ class Points_Object {
    * @param {*} points 
    * @returns 
   */
-  get_transformed_points(a, b, c, d, points ){
+  get_transformed_points(a, b, c, d, tx, ty, points ){
 
     if(points == undefined){
       var points = this.json_copy(this.pixel_drawer_points)
     }else{
       points = this.json_copy(points)
     }
+    return this.transform_points(a,b,c,d,tx,ty,points)
 
+  }
+
+  transform_points(a,b,c,d,tx,ty,points){
     for(var key in points){
       var point = points[key];
 
-      var n_x = a*point.x + b* point.y;
-      var n_y = c*point.x + d*point.y;
-  
+      var n_x = a*point.x + b* point.y + tx;
+      var n_y = c*point.x + d*point.y + ty;
+
       point.x = n_x;
       point.y = n_y;
 
@@ -183,26 +196,13 @@ class Points_Object {
 
     return points;
   }
+
   get_translated_points(a, b, points){
-    
-    if(points == undefined){
-      var points = this.json_copy(this.pixel_drawer_points)
-    }else{
-      points = this.json_copy(points)
-    }
+    return this.get_transformed_points(1,0, 0, 1, a, b, points)
+  }
 
-    for(var key in points){
-      var point = points[key];
-
-      var n_x = point.x + a;
-      var n_y = point.y + b;
-  
-      point.x = n_x;
-      point.y = n_y;
-
-    }
-
-    return points;
+  translate_points(a, b){
+    return this.transform_points(1,0,0,1,a,b,this.pixel_drawer_points)
   }
   /**
    * 
@@ -227,16 +227,31 @@ class Points_Object {
     return tpts;
 
   }
+  
+  rotate_points_around_center_by_radians(rad){
+
+    this.translate_points(parseInt(-this.width/2), parseInt(-this.height/2));
+
+    this.rotate_points_by_radians(rad);
+
+    this.translate_points(parseInt(this.width/2), parseInt(this.height/2));
+
+  }
+
+  rotate_points_by_radians(rad){
+    this.transform_points(Math.cos(rad), -Math.sin(rad), Math.sin(rad), Math.cos(rad),0,0, this.pixel_drawer_points)
+  }
+
   get_rotated_points_by_degrees(degrees, points){
     var radians = Math.PI*2/360*degrees;
     return this.get_rotated_points_by_radians(radians, points);
   }
   get_rotated_points_by_radians(rad, points){
-    return this.get_transformed_points(Math.cos(rad), -Math.sin(rad), Math.sin(rad), Math.cos(rad), points)
+    return this.get_transformed_points(Math.cos(rad), -Math.sin(rad), Math.sin(rad), Math.cos(rad),0,0, points)
   }
 
   get_scaled_points(w, h, points){
-    return this.get_transformed_points(w, 0, 0, h, points)
+    return this.get_transformed_points(w, 0, 0, h,0,0, points)
   }
 
   /**
@@ -256,4 +271,5 @@ class Points_Object {
   }
   
 }
+
 export { Points_Object } 

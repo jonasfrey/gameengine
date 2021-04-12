@@ -18,6 +18,7 @@ import { Point_3_D } from "./Point_3_D.js";
 class Pixel_Drawer_Point_3_D extends Point_3_D{
 
   constructor(x,y,z, hue = 1, brightness = 1) {
+    
     super(x,y,z);
     //this.point_3_d = new Point_3_D(x,y,z);
     Pixel_Drawer_Point_3_D.instances.push(this);

@@ -43,7 +43,7 @@ class Pixel_Drawer {
 
 
 
-
+        //this.parseInt_rendering = false;
         this.canvas.style.background = "black"; 
         this.clear_color = "hsla(0,0%, 0%, 1)";
         this.scale_x = 1;
@@ -111,6 +111,11 @@ class Pixel_Drawer {
         pixel.scaled_h = 1 * this.scale_x;
         pixel.scaled_x = pixel.x * this.scale_x * (1 + this.grid_offset_x * this.scale_x);
         pixel.scaled_y = pixel.y * this.scale_y * (1 + this.grid_offset_y * this.scale_y);
+
+        // if(this.parseInt_rendering){
+        //     pixel.scaled_x = parseInt(pixel.x) * this.scale_x * (1 + this.grid_offset_x * this.scale_x);
+        //     pixel.scaled_y = parseInt(pixel.y) * this.scale_y * (1 + this.grid_offset_y * this.scale_y);
+        // }
 
         return pixel;
     }
@@ -180,7 +185,7 @@ class Pixel_Drawer {
     clear_canvas(){
         //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = this.clear_color;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(-this.canvas.width/2, -this.canvas.height/2, this.canvas.width*2, this.canvas.height*2);
     }
     clear() {
         this.pixels = [];
@@ -248,6 +253,9 @@ class Pixel_Drawer {
             this.draw_pixels(this.pixels)
         }
 
+    render(){
+        this.render_added_pixels();
+    }
     /**
      * alias 
      * @param {array} pixels 
