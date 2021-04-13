@@ -14,63 +14,85 @@ class Point_3_D {
     this._x = parseFloat(x);
     this._y = parseFloat(y);
     this._z = parseFloat(z);
-    
-    this._last_x = parseFloat(x);
-    this._last_y = parseFloat(y);
-    this._last_z = parseFloat(z);
 
     this._delta_x = parseFloat(x);
     this._delta_y = parseFloat(y);
     this._delta_z = parseFloat(z);
+    
+    this._delta_history_x = []
+    this._delta_history_y = []
+    this._delta_history_z = []
+
+    this.dimension_variables = ["x","y","z"]
+    for(var key in this.dimension_variables){
+
+      let dv = this.dimension_variables[key];
+
+      Object.defineProperty(this, dv, {
+        get : function () {
+          if(this.parse_to_integer){ return parseInt(this["_"+dv])}
+          return parseFloat(this["_"+dv]);
+        },
+        set : function(val){
+          this["last_"+dv] = this["_"+dv];
+          this["_"+dv] = val;
+          this["_delta_history_"+dv].push(-1*(val-this["last_"+dv]))
+        }
+      });
+
+      // Object.defineProperty(this, "last_"+dv, {
+      //   get : function () {
+      //     return this["_delta_history_"+dv][this["_delta_history_"+dv].length-1];
+      //   }
+      // });
+      Object.defineProperty(this, "delta_"+dv, {
+        get : function () {
+          return this["_delta_history_"+dv].reduce((a, b) => a - b, 0)
+        }
+      });
+
+    }
   
     this.to_string_seperator = "|";
     this.parse_to_integer = Point_3_D.parse_to_integer;
     console.log(this + "was constructed");
   }
 
+  clear_delta_history(){
+
+    for(var key in this.dimension_variables){
+      let dv = this.dimension_variables[key];
+      this["_delta_history_"+dv] = [];
+    }
+  }
+  // /**
+  //  * we have to pass object and cannot use this, since it would recursivly execute copy_object function i believe
+  //  * create a copy of this object 
+  //  */
+  copy(){
+
+    //return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    //return Object.assign(Object.create(Object.getPrototypeOf(this)), {})
+    var o = Object.assign({}, this);
+    o.copy = this.copy;
+    
+    return o
+
+    // for(var key in this){
+    //   // the propery 'copy' is not iterated through here ? :0
+    //   o[key] = this[key];
+    // }
+    // return o;
+  }
+  // copy_object(object){
+  //   var o = {};
+  //   for(var key in object){
+  //     o[key] = object[key];
+  //   }
+  //   return o;
+  // }
   //x 
-  get x(){
-    if(this.parse_to_integer){ return parseInt(this._x)}
-    return this._x;
-  }
-  set x(val){
-    this._last_x = this._x;
-    this._x = val;
-    this._delta_x = -1 *(this._last_x - this._x);
-    return this.x;
-  }
-  get last_x(){return this._last_x}
-  get delta_x(){return this._delta_x}
-
-  //y
-  get y(){
-    if(this.parse_to_integer){ return parseInt(this._y)}
-    return this._y;
-  }
-  set y(val){
-    this._last_y = this._y;
-    this._y = val;
-    this._delta_y = -1 *(this._last_y - this._y);
-    return this.y;
-  }
-  get last_y(){return this._last_y}
-  get delta_y(){return this._delta_y}
-
-  //z
-  get z(){
-    if(this.parse_to_integer){ return parseInt(this._z)}
-    return this._z;
-  }
-  set z(val){
-    this._last_z = this._z;
-    this._z = val;
-    this._delta_z = -1 *(this._last_z - this._z);
-    return this.z;
-  }
-  get last_z(){return this._last_z}
-  get delta_z(){return this._delta_z}
-
-
+  
   /**
    * @param {int} index 
    * @param {int} w 

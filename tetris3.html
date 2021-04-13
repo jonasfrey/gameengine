@@ -182,110 +182,119 @@ xx
 
         brick.position_point_3_d.x = this.wall.position_point_3_d.x + this.wall_width / 2;
         brick.position_point_3_d.y = this.wall.position_point_3_d.y + 1;
-        brick.position_velocity_point_3_d.y = 0.05;
         
+        
+        
+        // brick.position_velocity_point_3_d.y = 0.05;
         //custom prop
         brick.onground = false;
 
         brick.render_function = function(){
-            
-            if(this.points_object.points.length < 1){
-                this.destroy();
-            }
+            console.log(this.position_point_3_d.y);
+            this.position_point_3_d.y += 0.05
 
-            //check if brick would collide 
-
-            if(!this.onground){
-
-                this.position_velocity_point_3_d.y = 0.05;
-
-                if (game.keydownsups["keyCode_38"].down) {
-
-                    //check if rotation is even possible , if to close to wall rotation should not be possible
-                    var max = Math.max(this.points_object.width, this.points_object.height);
-                    // if(
-                    //     this.position_point_3_d.x >= max-1 
-                    //     &&
-                    //     this.position_point_3_d.x <= game.wall_width  - max
-                    //     &&
-                    //     this.position_point_3_d.y >= max 
-                    //     &&
-                    //     this.position_point_3_d.y <= game.wall_height - max
-                    // ){
-                        // up arrow
-                        if(!game.keydownsups["keyCode_38"].down_lock){
-
-                            this.rotation_point_3_d.x += Math.PI*2/4;
-
-                            game.keydownsups["keyCode_38"].down_lock = true;
-                        }
-                    //}
-                }else{
-                    //when key released 
-                    game.keydownsups["keyCode_38"].down_lock = false;
-                }
-
-                if (game.keydownsups["keyCode_40"].down) {
-                    // down arrow
-                    this.position_velocity_point_3_d.y = 0.5;
-                }
-
-                if (game.keydownsups["keyCode_37"].down) {
-                    //if(this.position_point_3_d.x > 2){
-                        // left arrow
-                        if(!game.keydownsups["keyCode_37"].down_lock){
-
-                            this.position_point_3_d.x -=1;
-                            game.keydownsups["keyCode_37"].down_lock = true;
-                        }else{
-                            //optional movement speed when stayed on key
-                            this.position_point_3_d.x -=0.1;
-                        }
-                    //}
-                }else{
-                    game.keydownsups["keyCode_37"].down_lock = false;
-                }
-                if (game.keydownsups["keyCode_39"].down) {
-                    //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
-        
-                        // right arrow
-                        if(!game.keydownsups["keyCode_39"].down_lock){
-
-                            this.position_point_3_d.x +=1;
-                            game.keydownsups["keyCode_39"].down_lock = true;
-                        }else{
-                            //optional movement speed when stayed on key
-                            this.position_point_3_d.x +=0.1;
-                        }
-                    //}
-                    
-                }else{
-                    game.keydownsups["keyCode_39"].down_lock = false;
-                }
-
-            }else{
-                this.brightness = 0.5;
-            }
         }
-
-        // brick.collision_function = function(other_collision_objects, this_collision_object){
-        //     // only do stuff if the brick 
-        //     console.log(other_collision_objects);
-
-        //     //reset position to last rendered one, since the collision function is called after the calculate_point_3_d function 
-        //     this.position_point_3_d.x = this._last_rendered_position_point_3_d.x;
-        //     this.position_point_3_d.y = this._last_rendered_position_point_3_d.y;
-        //     //remove velocity 
-        //     this.position_velocity_point_3_d.y = 0;
-
-        //     // a hacky workaround , set brightiness to 0 hide collision, brightness will be set to 0.5 in the next render function since onground == true
-        //     this.brightness = 0;
+        // brick.render_function = function(){
             
-        //     this.onground = true;
-        //     game.spawn_brick();
-        //     // disable further collision function on this object
-        //     this.collision_function = function(){}
+        //     this.position_point_3_d.y += 0.05
+
+
+        //     if(this.points_object.points.length < 1){
+        //         this.destroy();
+        //     }
+
+        //     //check if brick would collide 
+
+        //     if(!this.onground){
+
+
+        //             // if (game.keydownsups["keyCode_38"].down) {
+
+        //             //     //check if rotation is even possible , if to close to wall rotation should not be possible
+        //             //     var max = Math.max(this.points_object.width, this.points_object.height);
+        //             //     // if(
+        //             //     //     this.position_point_3_d.x >= max-1 
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.x <= game.wall_width  - max
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.y >= max 
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.y <= game.wall_height - max
+        //             //     // ){
+        //             //         // up arrow
+        //             //         if(!game.keydownsups["keyCode_38"].down_lock){
+
+        //             //             this.rotation_point_3_d.x += Math.PI*2/4;
+
+        //             //             game.keydownsups["keyCode_38"].down_lock = true;
+        //             //         }
+        //             //     //}
+        //             // }else{
+        //             //     //when key released 
+        //             //     game.keydownsups["keyCode_38"].down_lock = false;
+        //             // }
+
+        //             // if (game.keydownsups["keyCode_40"].down) {
+        //             //     // down arrow
+        //             //     this.position_velocity_point_3_d.y = 0.5;
+        //             // }
+
+        //             // if (game.keydownsups["keyCode_37"].down) {
+        //             //     //if(this.position_point_3_d.x > 2){
+        //             //         // left arrow
+        //             //         if(!game.keydownsups["keyCode_37"].down_lock){
+
+        //             //             this.position_point_3_d.x -=1;
+        //             //             game.keydownsups["keyCode_37"].down_lock = true;
+        //             //         }else{
+        //             //             //optional movement speed when stayed on key
+        //             //             this.position_point_3_d.x -=0.1;
+        //             //         }
+        //             //     //}
+        //             // }else{
+        //             //     game.keydownsups["keyCode_37"].down_lock = false;
+        //             // }
+        //             // if (game.keydownsups["keyCode_39"].down) {
+        //             //     //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
+            
+        //             //         // right arrow
+        //             //         if(!game.keydownsups["keyCode_39"].down_lock){
+
+        //             //             this.position_point_3_d.x +=1;
+        //             //             game.keydownsups["keyCode_39"].down_lock = true;
+        //             //         }else{
+        //             //             //optional movement speed when stayed on key
+        //             //             this.position_point_3_d.x +=0.1;
+        //             //         }
+        //             //     //}
+                        
+        //             // }else{
+        //             //     game.keydownsups["keyCode_39"].down_lock = false;
+        //             // }
+
+        //     }else{
+        //         this.brightness = 0.5;
+        //     }
         // }
+
+        // // brick.collision_function = function(other_collision_objects, this_collision_object){
+        // //     // only do stuff if the brick 
+        // //     console.log(other_collision_objects);
+
+        // //     //reset position to last rendered one, since the collision function is called after the calculate_point_3_d function 
+        // //     this.position_point_3_d.x = this._last_rendered_position_point_3_d.x;
+        // //     this.position_point_3_d.y = this._last_rendered_position_point_3_d.y;
+        // //     //remove velocity 
+        // //     this.position_velocity_point_3_d.y = 0;
+
+        // //     // a hacky workaround , set brightiness to 0 hide collision, brightness will be set to 0.5 in the next render function since onground == true
+        // //     this.brightness = 0;
+            
+        // //     this.onground = true;
+        // //     game.spawn_brick();
+        // //     // disable further collision function on this object
+        // //     this.collision_function = function(){}
+        // // }
 
     }
 

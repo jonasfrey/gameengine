@@ -120,17 +120,14 @@ class Game_Object {
         
         
         // calc velocity vector
-        this[type+"_velocity_point_3_d"].x = this[type+"_velocity_point_3_d"].x + this[type+"_acceleration_point_3_d"].x
-        this[type+"_velocity_point_3_d"].y = this[type+"_velocity_point_3_d"].y + this[type+"_acceleration_point_3_d"].y
-        this[type+"_velocity_point_3_d"].z = this[type+"_velocity_point_3_d"].z + this[type+"_acceleration_point_3_d"].z
+        this[type+"_velocity_point_3_d"].x = this[type+"_velocity_point_3_d"]._x + this[type+"_acceleration_point_3_d"]._x
+        this[type+"_velocity_point_3_d"].y = this[type+"_velocity_point_3_d"]._y + this[type+"_acceleration_point_3_d"]._y
+        this[type+"_velocity_point_3_d"].z = this[type+"_velocity_point_3_d"]._z + this[type+"_acceleration_point_3_d"]._z
 
         // calc point vector
-        this[type+"_point_3_d"].x = this[type+"_point_3_d"].x + this[type+"_velocity_point_3_d"].x
-        this[type+"_point_3_d"].y = this[type+"_point_3_d"].y + this[type+"_velocity_point_3_d"].y
-        this[type+"_point_3_d"].z = this[type+"_point_3_d"].z + this[type+"_velocity_point_3_d"].z
-
-
-
+        this[type+"_point_3_d"].x = this[type+"_point_3_d"]._x + this[type+"_velocity_point_3_d"]._x
+        this[type+"_point_3_d"].y = this[type+"_point_3_d"]._y + this[type+"_velocity_point_3_d"]._y
+        this[type+"_point_3_d"].z = this[type+"_point_3_d"]._z + this[type+"_velocity_point_3_d"]._z
 
       }
 
@@ -144,40 +141,79 @@ class Game_Object {
 
     }
     transform_points_by_absolute(){
-
+      
       // now translate, rotate or scale the pixel object
 
       //first rotate the points, take the _orign points for that
       //json copy would remove the getters and setters from point_3_d
       //var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(this.rotation_point_3_d.x, this.points_object._origin_pixel_drawer_points_json_copy)
-      
-      var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(this.rotation_point_3_d.x, this.points_object._origin_pixel_drawer_points_json_copy)
+
+      var ps = this.points_object.point_3_d_copy_copy_objects_in_array(
+        this.points_object._origin_pixel_drawer_points_copy
+      )
+      var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(
+        this.rotation_point_3_d.x,
+        ps
+      );
+      debugger;
 
       // continue by mmanipulating the scale 
       // i dont know yet what axis to take for a rotation from top down view
     
-      var scaled_points = this.points_object.get_scaled_points(this.scale_point_3_d.x, this.scale_point_3_d.y,rotated_points);
+      var scaled_points = this.points_object.get_scaled_points(
+        this.scale_point_3_d.x,
+        this.scale_point_3_d.y,
+        rotated_points
+        );
 
       //trying only translation
-      var translated_points = this.points_object.get_translated_points(this.position_point_3_d.x, this.position_point_3_d.y, scaled_points)
+      var translated_points = this.points_object.get_translated_points(
+        this.position_point_3_d.x,
+        this.position_point_3_d.y,
+        scaled_points
+        )
       
       // now we have to apply the transformation to the actuall points
       for(var k in translated_points){
+        
         var p = translated_points[k];
+        
         //since we are using json copied points we have to use the "private" props with the underline prefix '_...'
-        this.points_object.pixel_drawer_points[k].x = p._x;
-        this.points_object.pixel_drawer_points[k].y = p._y;
-        this.points_object.pixel_drawer_points[k].z = p._z;
+        this.points_object.pixel_drawer_points[k].x = p.x;
+        this.points_object.pixel_drawer_points[k].y = p.y;
+        this.points_object.pixel_drawer_points[k].z = p.z;
       }
 
     }
     transform_points_by_delta(){
-      
+      // now the problem with the delta is the following 
+      // the positions for the points have to be recalculated with every change, which can be very processing costy can 
+      // this is not very efficient
+      // for example the programmer does change the position multiple times
+      // code ...
+      // game_object.position_point_3_d.x = 0
+      // code ...
+      // game_object.position_point_3_d.x = 10 -> delta would be 10, should recalculate points
+      //... some more code
+      // game_object.position_point_3_d.x = 2 -> delta would be 8, should recalculate points
+      // ... code
+      //game_object.position_point_3_d.x = 15 -> delta would be 13, should recalculate points
+      //
+      // now if the points get recalculated only with delta 13, the positions are wrong since they were not recalculated forecah delta ! 
+      // but since we add every change to the _delta_history array we can get that arrays sum to get the delta :)
+
      //this.points_object.rotate_points_around_center_by_radians(this.rotation_point_3_d.delta_x)
       // i dont know yet what axis to take for a rotation from top down view    
       //this.points_object.get_scaled_points(this.scale_point_3_d.delta_x, this.scale_point_3_d.delta_y,this.points_object.pixel_drawer_points);
       //trying only translation
+
+      console.log(this.position_point_3_d.y);
       this.points_object.translate_points(this.position_point_3_d.delta_x, this.position_point_3_d.delta_y)
+      //console.log(this.position_point_3_d.y);
+      //console.log(this.position_point_3_d._delta_history_y);
+      this.position_point_3_d.clear_delta_history()
+      //after the translation we must clear the delta history of every point_3_d
+
     }
 }
 Game_Object.prototype.destroy = function () {

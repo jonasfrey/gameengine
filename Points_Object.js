@@ -29,13 +29,16 @@ class Points_Object {
       //reference to pixel_drawer_points
       this.points = this.pixel_drawer_points;
 
-      this._origin_pixel_drawer_points_json_copy = this.json_copy(this.pixel_drawer_points)
+      //this._origin_pixel_drawer_points_json_copy = this.json_copy(this.pixel_drawer_points)
 
-      this._origin_pixel_drawer_points_spread_copy = []
+      //this.original_pixel_drawer_points = this.get_points_by_multiline_string(this.multiline_string);
+
+      //this._origin_pixel_drawer_points_objectcreate_copy = []
       
-      for(var key in this.pixel_drawer_points){
-        this._origin_pixel_drawer_points_spread_copy.push({...this.pixel_drawer_points[key]})
-      }
+      //this._origin_pixel_drawer_points_objectcreate_copy = this.object_create_copy_objects_in_array(this.pixel_drawer_points)
+
+      //this._origin_pixel_drawer_points_copy = this.point_3_d_copy_copy_objects_in_array(this.pixel_drawer_points)
+      
       //this._original_points = JSON.parse(JSON.stringify(this.points))
 
       console.log(this + "was constructed");
@@ -161,6 +164,76 @@ class Points_Object {
   json_copy(data){
     return JSON.parse(JSON.stringify(data))
   }
+  
+  /**
+   * get the !json_copied  points! transformed by a transformation matrix values
+   * @param {*} a 
+   * @param {*} b 
+   * @param {*} c 
+   * @param {*} d 
+   * @param {*} tx 
+   * @param {*} ty 
+   * @param {*} points 
+   */
+  get_json_copied_transformed_points(a, b, c, d, tx, ty, points){
+    if(points == undefined){
+      var points = this.json_copy(this.pixel_drawer_points)
+    }else{
+      points = this.json_copy(points)
+    }
+    return this.get_transformed_points(a,b,c,d,tx,ty,points);
+  }
+
+  
+  /**
+   * creates a copy with point_3_d.copy of each object in array 
+   * @param {array} array 
+   * @returns {array} array1
+   */
+   point_3_d_copy_copy_objects_in_array2(arr){
+
+    var new_arr = []
+    
+    for(var key in arr){
+         var o = {};
+         var obj = arr[key];
+        for(var key in obj){
+          o[key] = obj[key];
+        }
+      new_arr.push(o)
+    }
+
+    return new_arr
+  }  
+    /**
+   * creates a copy with point_3_d.copy of each object in array 
+   * @param {array} array 
+   * @returns {array} array1
+   */
+     point_3_d_copy_copy_objects_in_array(arr){
+
+      var new_arr = []
+      
+      for(var key in arr){
+        new_arr.push(arr[key].copy())
+      }
+
+      return new_arr
+    }  
+  /**
+   * creates a copy with Object.create() of each object in array 
+   * @param {array} array 
+   * @returns {array} array1
+   */
+  object_create_copy_objects_in_array(arr){
+
+    var new_arr = []
+    for(var key in arr){
+      new_arr.push(Object.create(arr[key]))
+    }
+    return new_arr
+  }
+
   /**
    * transformation matrix stuff 
    * values should not be 0 when using referenced objects in the array, since a factor of 0 would eliminated the origin data 
@@ -173,15 +246,21 @@ class Points_Object {
   */
   get_transformed_points(a, b, c, d, tx, ty, points ){
 
-    if(points == undefined){
-      var points = this.json_copy(this.pixel_drawer_points)
-    }else{
-      points = this.json_copy(points)
-    }
     return this.transform_points(a,b,c,d,tx,ty,points)
 
   }
 
+  /**
+   * transform points by transformation matrix values
+   * @param {number} a 
+   * @param {number} b 
+   * @param {number} c 
+   * @param {number} d 
+   * @param {number} tx 
+   * @param {number} ty 
+   * @param {array} points 
+   * @returns 
+   */
   transform_points(a,b,c,d,tx,ty,points){
     for(var key in points){
       var point = points[key];
@@ -197,13 +276,28 @@ class Points_Object {
     return points;
   }
 
-  get_translated_points(a, b, points){
-    return this.get_transformed_points(1,0, 0, 1, a, b, points)
+  /**
+   * 
+   * @param {number} tx  
+   * @param {number} ty
+   * @param {array} points 
+   * @returns 
+   */
+  get_translated_points(tx, ty, points){
+    return this.get_transformed_points(1,0, 0, 1, tx, ty, points)
   }
 
-  translate_points(a, b){
-    return this.transform_points(1,0,0,1,a,b,this.pixel_drawer_points)
+
+  /**
+   * applies the transformation with the object property pixel_drawer_points
+   * @param {number} tx  
+   * @param {number} ty 
+   * @returns 
+   */
+  translate_points(tx,ty){
+    return this.get_translated_points(tx, ty, this.pixel_drawer_points)
   }
+
   /**
    * 
    * @param {degrees} deg 
@@ -214,6 +308,12 @@ class Points_Object {
     var radians = Math.PI*2/360*deg;
     return this.get_rotated_points_around_center_by_radians(radians, points);
   }
+  /**
+   * 
+   * @param {number} rad radians (Math.PI * 2 => 360 degrees) 
+   * @param {array} points 
+   * @returns 
+   */
   get_rotated_points_around_center_by_radians(rad, points){
 
     //Translate your points such that the center is the new origin:
@@ -227,7 +327,11 @@ class Points_Object {
     return tpts;
 
   }
-  
+  /**
+   * 
+   * @param {number} rad radians (Math.PI * 2 => 360 degrees) 
+   * @returns 
+   */
   rotate_points_around_center_by_radians(rad){
 
     this.translate_points(parseInt(-this.width/2), parseInt(-this.height/2));

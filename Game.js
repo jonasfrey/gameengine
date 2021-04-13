@@ -124,8 +124,11 @@ class Game {
             o.calculate_point_3_d();
 
             o.render_function();
-
+            
             o.transform_points_by_delta();
+            
+            //o.transform_points_by_absolute();
+
             /**
              * get the
              *      translated
