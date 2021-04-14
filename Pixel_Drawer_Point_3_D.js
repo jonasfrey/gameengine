@@ -25,7 +25,19 @@ class Pixel_Drawer_Point_3_D extends Point_3_D{
     
     this.brightness = brightness;
     this.hue = hue;
+
+    // Object.defineProperty(this, "brightness", {
+    //   get : function () {
+    //     return this._brightness;
+    //   }, 
+    //   set : function (val) {
+    //     this._brightness = Math.max(0, val);
+    //   }, 
+
+    // });
   }
+
+  
 
 }
 

@@ -107,6 +107,8 @@ class Pixel_Drawer {
      */
     get_scaled_pixel(pixel) {
         
+        pixel.brightness = Math.max(0, pixel.brightness)
+        
         pixel.scaled_w = 1 * this.scale_y;
         pixel.scaled_h = 1 * this.scale_x;
 

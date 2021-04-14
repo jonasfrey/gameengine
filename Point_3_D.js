@@ -15,28 +15,30 @@ class Point_3_D {
     this._y = parseFloat(y);
     this._z = parseFloat(z);
 
-    this._delta_x = parseFloat(x);
-    this._delta_y = parseFloat(y);
-    this._delta_z = parseFloat(z);
+    // this._delta_x = parseFloat(x);
+    // this._delta_y = parseFloat(y);
+    // this._delta_z = parseFloat(z);
     
-    this._delta_history_x = []
-    this._delta_history_y = []
-    this._delta_history_z = []
+    // this._delta_history_x = []
+    // this._delta_history_y = []
+    // this._delta_history_z = []
 
     this.dimension_variables = ["x","y","z"]
     for(var key in this.dimension_variables){
-
+      
       let dv = this.dimension_variables[key];
-
+      
       Object.defineProperty(this, dv, {
         get : function () {
           //if(this.parse_to_integer){ return parseInt(this["_"+dv])} i think this makes no sense here... 
-          return parseFloat(this["_"+dv]);
+          return this["_"+dv];
         },
         set : function(val){
-          this["last_"+dv] = this["_"+dv];
+          //for the moment i do not use the getters and setters and the delta history since it is very performance hungry
+
+          //this["last_"+dv] = this["_"+dv]; //keep order!
           this["_"+dv] = val;
-          this["_delta_history_"+dv].push(-1*(val-this["last_"+dv]))
+          // this["_delta_history_"+dv].push(-1*(val-this["last_"+dv])) //keep orde!
         }
       });
 
@@ -45,6 +47,7 @@ class Point_3_D {
       //     return this["_delta_history_"+dv][this["_delta_history_"+dv].length-1];
       //   }
       // });
+
       
       Object.defineProperty(this, "_delta_"+dv, {
         get : function () {
@@ -80,20 +83,8 @@ class Point_3_D {
     
     return o
 
-    // for(var key in this){
-    //   // the propery 'copy' is not iterated through here ? :0
-    //   o[key] = this[key];
-    // }
-    // return o;
   }
-  // copy_object(object){
-  //   var o = {};
-  //   for(var key in object){
-  //     o[key] = object[key];
-  //   }
-  //   return o;
-  // }
-  //x 
+
   
   /**
    * @param {int} index 

@@ -187,7 +187,7 @@ class Game_Object {
       }
 
 
-      this.clear_point_3_d_delta_historys();
+      //this.clear_point_3_d_delta_historys();
 
 
     }

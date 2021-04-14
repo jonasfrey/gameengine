@@ -147,48 +147,50 @@ class Game {
 
             // tthis points will not be the same as o.points_object.points ! var points = o.points_object.get_rotated_points_around_center_by_radians(o.rotation_point_3_d.x, o.points_object.points);
             // this is dangerous because for example points_object.delete_point_by_point(point) won't work
-
-            for(var key in o.points_object.pixel_drawer_points){
+            
+            // tmp disable collisions
+            // for(var key in o.points_object.pixel_drawer_points){
                 
-                var point = o.points_object.pixel_drawer_points[key];
+            //     var point = o.points_object.pixel_drawer_points[key];
 
-                if(this.collision_objects[point.int_parsed_to_x_y_string()] == undefined){
-                    this.collision_objects[point.int_parsed_to_x_y_string()] = [];
-                } 
+            //     if(this.collision_objects[point.int_parsed_to_x_y_string()] == undefined){
+            //         this.collision_objects[point.int_parsed_to_x_y_string()] = [];
+            //     } 
                 
-                this.collision_objects[point.int_parsed_to_x_y_string()].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
+            //     this.collision_objects[point.int_parsed_to_x_y_string()].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
 
                 
-            }
+            // }
             
             //o.render_function();
             
             
         }
-        for(var key in this.collision_objects){
-            var cos_on_pixel = this.collision_objects[key];
+        //tmp disable collisions
+        // for(var key in this.collision_objects){
+        //     var cos_on_pixel = this.collision_objects[key];
 
-            for(var key in cos_on_pixel){
-                var co = cos_on_pixel[key];
-                var cos_on_pixel_without_co = cos_on_pixel.filter(asdf => asdf != co);
-                //console.log(cos_on_pixel);
-                // a collision of two pixels of the same object can occur since when an object is rotated two pixels may get 2.3¦4.4 and 2.1¦4.1 and then parseInt() since no subpixel rendering will make integers out of floats
-                var not_this_collision_object = cos_on_pixel.filter(asdf => asdf.game_object != co.game_object)
+        //     for(var key in cos_on_pixel){
+        //         var co = cos_on_pixel[key];
+        //         var cos_on_pixel_without_co = cos_on_pixel.filter(asdf => asdf != co);
+        //         //console.log(cos_on_pixel);
+        //         // a collision of two pixels of the same object can occur since when an object is rotated two pixels may get 2.3¦4.4 and 2.1¦4.1 and then parseInt() since no subpixel rendering will make integers out of floats
+        //         var not_this_collision_object = cos_on_pixel.filter(asdf => asdf.game_object != co.game_object)
                 
-                if(cos_on_pixel.length > 1){
-                    co.game_object.collision_function(not_this_collision_object, co)
-                }
-                var point = co.point_relative_to_game_object;                
+        //         if(cos_on_pixel.length > 1){
+        //             co.game_object.collision_function(not_this_collision_object, co)
+        //         }
+        //         var point = co.point_relative_to_game_object;                
                 
-                var hue = point.hue || co.game_object.hue;
-                var brightness = point.brightness || co.game_object.brightness;
+        //         var hue = point.hue || co.game_object.hue;
+        //         var brightness = point.brightness || co.game_object.brightness;
 
-                var x = parseInt(co.game_object.position_point_3_d.x + point.x);
-                var y = parseInt(co.game_object.position_point_3_d.y + point.y);
+        //         var x = parseInt(co.game_object.position_point_3_d.x + point.x);
+        //         var y = parseInt(co.game_object.position_point_3_d.y + point.y);
 
-                //this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
-            }
-        }
+        //         //this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
+        //     }
+        // }
 
         this.pixel_drawer.render_pixel_drawer_point_3_d_instances();
     }
@@ -215,8 +217,8 @@ class Game {
 
         if(this.render_delta_ms > this.render_delta_limit_ms){
         
-            this.console_text += "render_delta_ms (0-40): " + parseInt(this.render_delta_ms)+"\n"
-            this.console_text += this.get_bar_str(0, 40, this.render_delta_ms, 15)+"\n"
+            this.console_text = "render_delta_ms (0-40): " + parseInt(this.render_delta_ms)+"\n"
+            this.console_text   = this.get_bar_str(0, 40, this.render_delta_ms, 15)+"\n"
             this.console_output_html_element.innerText = this.console_text;
             this.console_output_html_element.scrollTop = this.console_output_html_element.scrollHeight;
             
