@@ -29,6 +29,8 @@ class Points_Object {
       //reference to pixel_drawer_points
       this.points = this.pixel_drawer_points;
 
+      this.json_copied_points = JSON.parse(JSON.stringify(this.points))
+
       //this._origin_pixel_drawer_points_json_copy = this.json_copy(this.pixel_drawer_points)
 
       //this.original_pixel_drawer_points = this.get_points_by_multiline_string(this.multiline_string);
@@ -42,6 +44,7 @@ class Points_Object {
       //this._original_points = JSON.parse(JSON.stringify(this.points))
 
       console.log(this + "was constructed");
+
   }
   get relative_center_x(){
     return parseInt(this.width / 2)
@@ -262,14 +265,15 @@ class Points_Object {
    * @returns 
    */
   transform_points(a,b,c,d,tx,ty,points){
+
     for(var key in points){
       var point = points[key];
 
-      var n_x = a*point.x + b* point.y + tx;
-      var n_y = c*point.x + d*point.y + ty;
+      var n_x = a*point._x + b* point._y + tx; 
+      var n_y = c*point._x + d*point._y + ty;
 
-      point.x = n_x;
-      point.y = n_y;
+      point._x = n_x;
+      point._y = n_y;
 
     }
 
@@ -298,6 +302,26 @@ class Points_Object {
     return this.get_translated_points(tx, ty, this.pixel_drawer_points)
   }
 
+    /**
+   * applies the transformation with the object property pixel_drawer_points
+   * @param {number} tx  
+   * @param {number} ty 
+   * @returns 
+   */
+     scale_points(w,h){
+      return this.get_transformed_points(w, 0, 0, h,0,0, this.pixel_drawer_points)
+    }
+      /**
+   * applies the transformation with the object property pixel_drawer_points
+   * @param {number} tx  
+   * @param {number} ty 
+   * @returns 
+   */
+       rotate_points(rad){
+    return this.get_rotated_points_by_radians(rad, this.pixel_drawer_points)
+  }
+
+  
   /**
    * 
    * @param {degrees} deg 
@@ -320,7 +344,7 @@ class Points_Object {
 
     var tpts = this.get_translated_points(parseInt(-this.width/2), parseInt(-this.height/2), points);
 
-    var rpts = this.get_rotated_points_by_radians(rad , tpts);
+    var rpts = this.get_rotated_points_by_radians(rad,tpts);
 
     var tpts = this.get_translated_points(parseInt(this.width/2), parseInt(this.height/2), rpts);
 
@@ -371,6 +395,13 @@ class Points_Object {
   destroy_points(){
     for(var key in this.pixel_drawer_points){
       this.pixel_drawer_points[key].destroy();
+    }
+  }
+
+  clear_point_3_d_delta_historys(){
+    for(var key in this.points){
+      var point = this.points[key];
+      point.clear_delta_history();
     }
   }
   

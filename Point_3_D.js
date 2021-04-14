@@ -30,7 +30,7 @@ class Point_3_D {
 
       Object.defineProperty(this, dv, {
         get : function () {
-          if(this.parse_to_integer){ return parseInt(this["_"+dv])}
+          //if(this.parse_to_integer){ return parseInt(this["_"+dv])} i think this makes no sense here... 
           return parseFloat(this["_"+dv]);
         },
         set : function(val){
@@ -45,7 +45,8 @@ class Point_3_D {
       //     return this["_delta_history_"+dv][this["_delta_history_"+dv].length-1];
       //   }
       // });
-      Object.defineProperty(this, "delta_"+dv, {
+      
+      Object.defineProperty(this, "_delta_"+dv, {
         get : function () {
           return this["_delta_history_"+dv].reduce((a, b) => a - b, 0)
         }
@@ -55,6 +56,7 @@ class Point_3_D {
   
     this.to_string_seperator = "|";
     this.parse_to_integer = Point_3_D.parse_to_integer;
+    
     console.log(this + "was constructed");
   }
 
@@ -164,6 +166,12 @@ class Point_3_D {
    */
   get_1_d_array_index(x, y, z, w, h) {
     return this.get_1_d_array_index_by_x_y_z_w_h(x, y, z, w, h)
+  }
+  delta_to_string(){
+    return this._delta_x + this.to_string_seperator + this._delta_y + this.to_string_seperator + this._delta_z
+  }
+  to_string(){
+    return this.to_x_y_z_string();
   }
 
   to_x_y_string(){

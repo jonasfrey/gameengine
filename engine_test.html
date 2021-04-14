@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+        .game_console{
+            position: fixed;
+            z-index: 20;
+            top:0;
+            right: 0;
+            color:lightgreen;
+            font-family: monospace;
+            height: 100px;
+            overflow-y:scroll;
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Game} from './Game.js';
+    
+    window.g = new Game()
+    var game = window.g;
+
+    // aaaaaalright lets se what we can do with this awesome engine ! 
+
+    // the rendering is done by the Pixel_Drawer which uses the 2d html canvas
+    
+    // you can adjust the width and height of a pixel
+    g.pixel_drawer.scale_x = 10;
+    g.pixel_drawer.scale_y = 10;
+    // if you want a pixel grid look/style you'll have to set the parse_to_integer to true
+    // this way sub pixels/floats won't get drawn 
+    g.pixel_drawer.parse_to_integer = true;
+
+
+    // spawn a object, either 2d or 3d points/vectors/vertices/vertexes or what ever in this world you wanna call em, will be point_3_d  instances anyway
+    game.game_object = new Game_Object(`\n x \nxxx`);
+    
+    // set a hue 0-360
+    game.game_object.hue = 222;
+
+    // set the lightness/brightness 0-1
+    game.game_object.brightness = 0.8;
+    
+    // every object has the following transformation properties which can be set statically
+    // scale , 
+    game.game_object.scale_point_3_d.x = 2;
+    game.game_object.scale_point_3_d.y = 2;
+    //position ,
+    game.game_object.position_point_3_d.x = 1;
+    game.game_object.position_point_3_d.y = 2;
+    //rotation 
+    game.game_object.rotation_point_3_d.x = 1;
+
+    // every property has multiple 'speed' properties
+    
+    // first there is the veloctiy which is constant if set like this
+    // speed of the transformation_type 
+    game.game_object.position_velocity_point_3_d.x = 0.002; // x += 0.2 on each render
+    // then there is the acceleration which is like the
+    // speed of the velocity 
+    game.game_object.position_acceleration_point_3_d.x = 0.003 // velocity x += 0.3 on each render
+
+    // optionally you can define a render_function on a game_object
+    // the render_function gets called once every render cycle
+    
+    // the render cylcle has the following process 
+        // pixel_drawer clearing the canvas 
+        // foreach game_object
+            // if render_id >= render_id_limit 
+                // game_object.destroy()
+            // game_object.calculate_point_3_d() // set the velocty by acceleration and the position by velocity
+
+            // game_object.render_function() // call the render function on the object
+
+            // transform the subpixels of the object (absolute or delta)
+                // o.transform_points_by_delta();
+                // o.transform_points_by_absolute();
+            
+            // check for collisions
+        // foreach collision object key (collision object is a object with keys x|y|z and value array { "1|2|3": [{}] } )
+            //if array > 1
+            // foreach collision_object->game_object collision_function(other_collision_objects, this_collision_object)
+            // so game_object.collision_function(...)
+        
+        // optionally 
+            // pixel_drawer.add_pixel({x:x, y:y, hue:1, brightness:1}) // manually ad a pixel  but then the advantages of references gets lost
+
+        // if you used pixel_drawer.add_pixel... 
+            // pixel_drawer.render()
+
+        // otherwise
+            // pixel_drawer.render_pixel_drawer_point_3_d_instances() // renders all point_3_d instances
+
+
+    game.start_rendering();
+
+
+
+
+    </script>
+
+
+
+</body>
+</html>

@@ -18,6 +18,13 @@ class Game {
     //we pass the reference here 
     this.pixel_drawer.pixels = Pixel_Drawer_Point_3_D.instances;
 
+    this.console_output_html_element = document.createElement("div");
+    this.console_output_html_element.className = "game_console"
+    this.console_output_html_element.style.whiteSpace = "pre"
+    
+    document.documentElement.append(this.console_output_html_element);
+
+
     var per_width = 10;
     
     var self = this;
@@ -125,9 +132,9 @@ class Game {
 
             o.render_function();
             
-            o.transform_points_by_delta();
+            //o.transform_points_by_delta();
             
-            //o.transform_points_by_absolute();
+            o.transform_points_by_absolute();
 
             /**
              * get the
@@ -144,14 +151,12 @@ class Game {
             for(var key in o.points_object.pixel_drawer_points){
                 
                 var point = o.points_object.pixel_drawer_points[key];
-                // actually this is only a translation
-                var x = parseInt(o.position_point_3_d.x + point.x);
-                var y = parseInt(o.position_point_3_d.y + point.y);
 
-                if(this.collision_objects[x+"|"+y] == undefined){
-                    this.collision_objects[x+"|"+y] = [];
+                if(this.collision_objects[point.int_parsed_to_x_y_string()] == undefined){
+                    this.collision_objects[point.int_parsed_to_x_y_string()] = [];
                 } 
-                this.collision_objects[x+"|"+y].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
+                
+                this.collision_objects[point.int_parsed_to_x_y_string()].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
 
                 
             }
@@ -188,6 +193,19 @@ class Game {
         this.pixel_drawer.render_pixel_drawer_point_3_d_instances();
     }
 
+    get_bar_str(min, max, val, character_width){
+        var range = max-min;
+        var width = character_width / range * val;
+        var str_str = ""
+        for(var i = 0; i<max; i++){
+            if(i< val){
+                str_str += "■"
+            }else{
+                str_str += " "
+            }
+        }
+        return "["+str_str+"]"
+    }
     render_loop(){
 
         //console.log("render_loop was called");
@@ -196,6 +214,11 @@ class Game {
         this.render_delta_ms = Math.abs(this.performance_now - this.performance_then)
 
         if(this.render_delta_ms > this.render_delta_limit_ms){
+        
+            this.console_text += "render_delta_ms (0-40): " + parseInt(this.render_delta_ms)+"\n"
+            this.console_text += this.get_bar_str(0, 40, this.render_delta_ms, 15)+"\n"
+            this.console_output_html_element.innerText = this.console_text;
+            this.console_output_html_element.scrollTop = this.console_output_html_element.scrollHeight;
             
             this.render();
             

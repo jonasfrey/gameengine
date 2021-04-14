@@ -41,9 +41,8 @@ class Pixel_Drawer {
 
         this.ctx = this.canvas.getContext('2d');
 
+        this.parse_to_integer = Pixel_Drawer.parse_to_integer;
 
-
-        //this.parseInt_rendering = false;
         this.canvas.style.background = "black"; 
         this.clear_color = "hsla(0,0%, 0%, 1)";
         this.scale_x = 1;
@@ -107,15 +106,17 @@ class Pixel_Drawer {
      * @returns 
      */
     get_scaled_pixel(pixel) {
+        
         pixel.scaled_w = 1 * this.scale_y;
         pixel.scaled_h = 1 * this.scale_x;
+
         pixel.scaled_x = pixel.x * this.scale_x * (1 + this.grid_offset_x * this.scale_x);
         pixel.scaled_y = pixel.y * this.scale_y * (1 + this.grid_offset_y * this.scale_y);
 
-        // if(this.parseInt_rendering){
-        //     pixel.scaled_x = parseInt(pixel.x) * this.scale_x * (1 + this.grid_offset_x * this.scale_x);
-        //     pixel.scaled_y = parseInt(pixel.y) * this.scale_y * (1 + this.grid_offset_y * this.scale_y);
-        // }
+        if(Pixel_Drawer.parse_to_integer){
+            pixel.scaled_x = parseInt(pixel.x) * this.scale_x * (1 + this.grid_offset_x * this.scale_x);
+            pixel.scaled_y = parseInt(pixel.y) * this.scale_y * (1 + this.grid_offset_y * this.scale_y);
+        }
 
         return pixel;
     }
@@ -280,7 +281,7 @@ class Pixel_Drawer {
 
 
 }
-
+Pixel_Drawer.parse_to_integer = false
 export {
     Pixel_Drawer
 }

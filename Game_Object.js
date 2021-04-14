@@ -23,6 +23,12 @@ class Game_Object {
       
       Game_Object.instances.push(this);
 
+      this.transformation_types = ["position", "rotation", "scale"];
+      //TODO implement velocity and acceleration for graphical_transformation_types aswell
+      this.graphical_transformation_types = ["hue", "saturation", "brightness"]
+
+      this.speed_types = ["velocity", "acceleration"];
+
 
       if(multiline_string != ""){
         this.multiline_string = multiline_string || `x`
@@ -111,7 +117,7 @@ class Game_Object {
     calculate_point_3_d(type){
       var types = [type];
       if(!type){
-        var types = ["position", "rotation", "scale"];
+        var types = this.transformation_types;
       }
 
 
@@ -148,15 +154,11 @@ class Game_Object {
       //json copy would remove the getters and setters from point_3_d
       //var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(this.rotation_point_3_d.x, this.points_object._origin_pixel_drawer_points_json_copy)
 
-      var ps = this.points_object.point_3_d_copy_copy_objects_in_array(
-        this.points_object._origin_pixel_drawer_points_copy
-      )
       var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(
         this.rotation_point_3_d.x,
-        ps
+        JSON.parse(JSON.stringify(this.points_object.json_copied_points)) // <- a json copy of the origin points in the constructor function
       );
-      debugger;
-
+      
       // continue by mmanipulating the scale 
       // i dont know yet what axis to take for a rotation from top down view
     
@@ -172,17 +174,21 @@ class Game_Object {
         this.position_point_3_d.y,
         scaled_points
         )
-      
+
       // now we have to apply the transformation to the actuall points
       for(var k in translated_points){
         
         var p = translated_points[k];
         
         //since we are using json copied points we have to use the "private" props with the underline prefix '_...'
-        this.points_object.pixel_drawer_points[k].x = p.x;
-        this.points_object.pixel_drawer_points[k].y = p.y;
-        this.points_object.pixel_drawer_points[k].z = p.z;
+        this.points_object.pixel_drawer_points[k].x = p._x;
+        this.points_object.pixel_drawer_points[k].y = p._y;
+        this.points_object.pixel_drawer_points[k].z = p._z;
       }
+
+
+      this.clear_point_3_d_delta_historys();
+
 
     }
     transform_points_by_delta(){
@@ -207,13 +213,51 @@ class Game_Object {
       //this.points_object.get_scaled_points(this.scale_point_3_d.delta_x, this.scale_point_3_d.delta_y,this.points_object.pixel_drawer_points);
       //trying only translation
 
-      console.log(this.position_point_3_d.y);
-      this.points_object.translate_points(this.position_point_3_d.delta_x, this.position_point_3_d.delta_y)
-      //console.log(this.position_point_3_d.y);
-      //console.log(this.position_point_3_d._delta_history_y);
-      this.position_point_3_d.clear_delta_history()
+      // console.log("pos" +this.points_object.pixel_drawer_points[0].to_string());
+      
+      // console.log("delta" +this.points_object.pixel_drawer_points[0].delta_to_string());
+
+      // console.log(this.position_point_3_d.x);
+      // console.log(this.position_point_3_d.delta_x);
+
+      //this.points_object.scale_points(this.scale_point_3_d._delta_x, this.scale_point_3_d._delta_y)
+      //this.points_object.translate_points(this.position_point_3_d._delta_x, this.position_point_3_d._delta_y)
+      
+
+      //this.points_object.rotate_points(this.rotation_point_3_d._delta_x)
+
+
+      //rotate around center 
+      this.points_object.translate_points(
+        - this.position_point_3_d.x - (this.points_object.width/2),
+        - this.position_point_3_d.y - (this.points_object.height/2)
+        );
+
+        console.log(this.position_point_3_d.y);
+
+      this.points_object.rotate_points(this.rotation_point_3_d._delta_x);
+
+      this.points_object.translate_points(
+        this.position_point_3_d.x + (this.points_object.width/2),
+        this.position_point_3_d.y + (this.points_object.height/2)
+      );
+
+      this.points_object.translate_points(this.position_point_3_d._delta_x, this.position_point_3_d._delta_y)
+
+      this.clear_point_3_d_delta_historys();
       //after the translation we must clear the delta history of every point_3_d
 
+    }
+    clear_point_3_d_delta_historys(){
+      for(var key in this.transformation_types){
+        var transformation_type = this.transformation_types[key];
+        this[transformation_type+"_point_3_d"].clear_delta_history();
+        for(var key in this.speed_types){
+          var speed_type = this.speed_types[key];
+          this[transformation_type+"_"+speed_type+"_point_3_d"].clear_delta_history();
+        }
+      }
+      this.points_object.clear_point_3_d_delta_historys();
     }
 }
 Game_Object.prototype.destroy = function () {
