@@ -17,9 +17,16 @@ class Points_Object {
       this.multiline_string = multiline_string;
       this._origin_pixel_drawer_points = []
       this.pixel_drawer_points = []
+      
+      // this property can change and is depending on the 
+      this._width = 0;
+      this._height = 0;
+      this._depth = 0;
+
       this.width = 0;
       this.height = 0;
       this.depth = 0;
+
       this.hue = hue;
       this.brightness = brightness;
       
@@ -32,20 +39,69 @@ class Points_Object {
       this.json_copied_points = JSON.parse(JSON.stringify(this.points))
 
       //this._origin_pixel_drawer_points_json_copy = this.json_copy(this.pixel_drawer_points)
-
       //this.original_pixel_drawer_points = this.get_points_by_multiline_string(this.multiline_string);
-
       //this._origin_pixel_drawer_points_objectcreate_copy = []
-      
       //this._origin_pixel_drawer_points_objectcreate_copy = this.object_create_copy_objects_in_array(this.pixel_drawer_points)
-
       //this._origin_pixel_drawer_points_copy = this.point_3_d_copy_copy_objects_in_array(this.pixel_drawer_points)
-      
       //this._original_points = JSON.parse(JSON.stringify(this.points))
 
       console.log(this + "was constructed");
 
   }
+
+  /**
+   * iterate through points array with point_3_d objects and
+   * find min max value foreach axis 
+   * set the range as _width, _height, or _depth 
+   */
+  set_width_height_depth(){
+    var min_max = {min: {x:0,y:0,z:0}, max:{x:0,y:0,z:0}}
+    for(var key in this.points){
+      var p = this.points[key];
+      if(p.x < min_max.min.x){ min_max.min.x = p.x; }
+      if(p.y < min_max.min.y){ min_max.min.y = p.y; }
+      if(p.z < min_max.min.z){ min_max.min.z = p.z; }
+      if(p.x > min_max.max.x){ min_max.max.x = p.x; }
+      if(p.y > min_max.max.y){ min_max.max.y = p.y; }
+      if(p.z > min_max.max.z){ min_max.max.z = p.z; }
+    }
+  
+    // width is the range max-min
+    this._width = Math.abs(min_max.max.x-min_max.min.x);
+    this._height = Math.abs(min_max.max.y-min_max.min.y);
+    this._depth = Math.abs(min_max.max.z-min_max.min.z);
+    
+  }
+
+  // set width(val){
+  //   this._width = val;
+  // }
+  
+  // get width(){
+  //   // for now this is maybe inefficient 
+  //   // set_width_height_depth should only run when a object in this.pixels changes ! 
+  //   // same for height, depth
+  //   //this.set_width_height_depth();
+  //   // i rather just set this._width and this._height when applkying a scaling tranformation to this.points see -> this.scale_points()...
+  //   return this._width;
+  // }
+  
+  // set height(val){
+  //   this._width = val;
+  // }
+  
+  // get height(){
+  //   //this.set_width_height_depth();
+  //   return this._height;
+  // }
+  // set depth(val){
+  //   this._width = val;
+  // }
+  // get depth(){
+  //   //this.set_width_height_depth();
+  //   return this._depth;
+  // }
+
   get relative_center_x(){
     return parseInt(this.width / 2)
   }
@@ -309,6 +365,10 @@ class Points_Object {
    * @returns 
    */
      scale_points(w,h){
+       
+       this.width = w * this.width;
+       this.height = h * this.height;
+
       return this.get_transformed_points(w, 0, 0, h,0,0, this.pixel_drawer_points)
     }
       /**

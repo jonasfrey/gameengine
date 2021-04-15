@@ -62,9 +62,15 @@
     window.g = new Game()
     var game = window.g;
 
+    
     game.pixel_grid_width = 200;
     game.pixel_grid_height = 200;
+    game.pixel_drawer.scale_x = 5;
+    game.pixel_drawer.scale_y = 5;
 
+    // use it for a fancy time strech effect :) ! 
+
+    game.basic_speed = 1;
     // now lets make a simple space shooter 
     game.spaceship = new Game_Object(
 `
@@ -100,7 +106,7 @@ xxxx xxxx
     game.spaceship.rotation_speed = Math.PI * 2 / 1024;
     game.spaceship.movement_speed = 0.03;
     game.spaceship.movement_speed_backwards = 0.01;
-
+    
     game.spaceship.flame_animation_for_points = function(points){
         
         // now we can make use of the 
@@ -132,7 +138,7 @@ xxxx xxxx
 
         if (game.keydownsups["keyCode_37"].down) {
             // i dont know what axis this is , depends on the view of the game , in a top down shooter it could be the yaw axis... just using x for now
-            this.rotation_velocity_point_3_d.x -= this.rotation_speed;
+            this.rotation_velocity_point_3_d.x -= this.rotation_speed * game.basic_speed;
             
             this.flame_animation_for_points(this.points_flame_rotation_left);
 
@@ -143,8 +149,8 @@ xxxx xxxx
         if (game.keydownsups["keyCode_38"].down) {
             
             //some fancy math for the movement direction wich is depending on the rotation
-            this.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed;
-            this.position_velocity_point_3_d.y -= (Math.cos(this.rotation_point_3_d.x))* this.movement_speed;
+            this.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed * game.basic_speed;
+            this.position_velocity_point_3_d.y -= (Math.cos(this.rotation_point_3_d.x))* this.movement_speed * game.basic_speed;
 
             // now we can make use of the 
             this.flame_animation_for_points(this.points_flame);
@@ -154,8 +160,8 @@ xxxx xxxx
             this.hide_points(this.points_flame);
         }
         if (game.keydownsups["keyCode_39"].down) {
-            //this.position_velocity_point_3_d.x += this.movement_speed;
-            this.rotation_velocity_point_3_d.x += this.rotation_speed;
+            //this.position_velocity_point_3_d.x += this.movement_speed * game.basic_speed;
+            this.rotation_velocity_point_3_d.x += this.rotation_speed * game.basic_speed;
 
             // now we can make use of the 
             this.flame_animation_for_points(this.points_flame_rotation_right);
@@ -164,29 +170,108 @@ xxxx xxxx
             this.hide_points(this.points_flame_rotation_right)
         }
         if (game.keydownsups["keyCode_40"].down) {
+            game.pixel_drawer.clear_color = "hsla(0,0%, 0%, 0.1)";
+            // slow mo go ! 
+            game.basic_speed = 0.5;
+            this.basic_speed_object.speed = 0.1;
+
             //some fancy math for the movement direction wich is depending on the rotation
             
-            this.position_velocity_point_3_d.x += (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed_backwards;
-            this.position_velocity_point_3_d.y += (Math.cos(this.rotation_point_3_d.x))* this.movement_speed_backwards;
+            this.position_velocity_point_3_d.x += (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed_backwards * game.basic_speed;
+            this.position_velocity_point_3_d.y += (Math.cos(this.rotation_point_3_d.x))* this.movement_speed_backwards * game.basic_speed;
 
             // now we can make use of the 
             this.flame_animation_for_points(this.points_flame_backwards);
 
         }else{
+            game.basic_speed = 1;
+            this.basic_speed_object.speed = 1;
+
+            game.pixel_drawer.clear_color = "hsla(0,0%, 0%, 1)";
+
             this.hide_points(this.points_flame_backwards)
         }
 
         if (game.keydownsups["keyCode_32"].down) {
-            //this.scale_point_3_d.x +=0.1;
-            //spawn_asteroid();
-            //this.shoot();
+
+            this.shoot();
         }
-        // prevent this from getting out of the screen
-        this.position_point_3_d.x = this.position_point_3_d.x % (game.pixel_grid_width/2);
-        this.position_point_3_d.y = this.position_point_3_d.y % (game.pixel_grid_height/2);
+        game.reposition_if_out_of_bounds(this)
 
     }
     
+    game.spaceship.points_gun_barrels = game.spaceship.points_object.points.filter(function(value, key){return [0, 8, 12].indexOf(key) != -1})
+
+    game.spaceship.point_gun_barrel = game.spaceship.points_gun_barrels[0];
+
+    game.spaceship.shot_basic_speed_object = {speed:1}
+    game.spaceship.shoot = function(){
+
+        // e huere arschgeburt vore zile code holy shit, aber scheisse ischsi effizient
+        this.point_gun_barrel = this.points_gun_barrels[(this.points_gun_barrels.indexOf(this.point_gun_barrel)+1)%this.points_gun_barrels.length];
+
+        var shot = new Game_Object(`\nx\nx`);
+        shot.name = "shot";
+        shot.hue =  222;
+        //shot.hue = this.hue;
+        shot.movement_speed = 2;
+        // shot direction depening on the rotation of the spaceship 
+        shot.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* shot.movement_speed * game.basic_speed;
+        shot.position_velocity_point_3_d.y  -= (Math.cos(this.rotation_point_3_d.x))* shot.movement_speed * game.basic_speed;
+
+
+        shot.rotation_point_3_d.x = this.rotation_point_3_d.x;
+        shot.rotation_point_3_d.y = this.rotation_point_3_d.y;
+        
+        shot.position_point_3_d.x = this.point_gun_barrel.x;
+        shot.position_point_3_d.y = this.point_gun_barrel.y;
+        
+        shot.basic_speed_object = this.basic_speed_object;
+
+        shot.render_function = function(){
+            // shot.position_velocity_point_3_d.x = shot.position_velocity_point_3_d.x * game.basic_speed;
+            // shot.position_velocity_point_3_d.y = shot.position_velocity_point_3_d.y * game.basic_speed;
+            game.destroy_if_out_of_bounds(this);
+        }
+
+    }
+
+    game.destroy_if_out_of_bounds = function(game_object){
+        var self = game_object || this;
+        if(
+                self.position_point_3_d.x < -(game.pixel_grid_widt/2) ||
+                self.position_point_3_d.x > (game.pixel_grid_width/2) ||
+                self.position_point_3_d.y < -(game.pixel_grid_height/2) ||
+                self.position_point_3_d.y > (game.pixel_grid_height/2)
+                    ){
+                self.destroy();
+                return true;
+        }
+        return false;
+    }
+
+    game.reposition_if_out_of_bounds = function(game_object){
+        var self = game_object || this;
+
+        if(self.position_point_3_d.x < -game.pixel_grid_width/2){
+            self.position_point_3_d.x = game.pixel_grid_width/2;
+        }
+        if(self.position_point_3_d.y < -game.pixel_grid_height/2){
+            self.position_point_3_d.y = game.pixel_grid_height/2;
+        }
+
+
+        if(self.position_point_3_d.x > game.pixel_grid_width/2){
+            self.position_point_3_d.x = -game.pixel_grid_width/2;
+        }
+        if(self.position_point_3_d.y > game.pixel_grid_height/2){
+            self.position_point_3_d.y = -game.pixel_grid_height/2;
+        }
+        // prevent this from getting out of the screen
+        // for the moment i dont have the modulo solution without an if , if there even is one , using 0 and 1 (true false) as factor is not counting as a solution without an if
+        // self.position_point_3_d.x = (self.position_point_3_d.x % (game.pixel_grid_width/2));
+        // self.position_point_3_d.y = self.position_point_3_d.y % (game.pixel_grid_height);
+    }
 
 
     

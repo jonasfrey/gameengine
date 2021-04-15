@@ -35,6 +35,7 @@ class Game_Object {
         this.points_object = new Points_Object(this.multiline_string)
       }
       
+      this.basic_speed_object = {speed:1};
       //position
       this.position_point_3_d = new Point_3_D(0,0,0);
       this.position_velocity_point_3_d = new Point_3_D(0,0,0);
@@ -126,14 +127,14 @@ class Game_Object {
         
         
         // calc velocity vector
-        this[type+"_velocity_point_3_d"].x = this[type+"_velocity_point_3_d"]._x + this[type+"_acceleration_point_3_d"]._x
-        this[type+"_velocity_point_3_d"].y = this[type+"_velocity_point_3_d"]._y + this[type+"_acceleration_point_3_d"]._y
-        this[type+"_velocity_point_3_d"].z = this[type+"_velocity_point_3_d"]._z + this[type+"_acceleration_point_3_d"]._z
+        this[type+"_velocity_point_3_d"].x = this[type+"_velocity_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._x
+        this[type+"_velocity_point_3_d"].y = this[type+"_velocity_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._y
+        this[type+"_velocity_point_3_d"].z = this[type+"_velocity_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._z
 
         // calc point vector
-        this[type+"_point_3_d"].x = this[type+"_point_3_d"]._x + this[type+"_velocity_point_3_d"]._x
-        this[type+"_point_3_d"].y = this[type+"_point_3_d"]._y + this[type+"_velocity_point_3_d"]._y
-        this[type+"_point_3_d"].z = this[type+"_point_3_d"]._z + this[type+"_velocity_point_3_d"]._z
+        this[type+"_point_3_d"].x = this[type+"_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._x
+        this[type+"_point_3_d"].y = this[type+"_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._y
+        this[type+"_point_3_d"].z = this[type+"_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._z
 
       }
 

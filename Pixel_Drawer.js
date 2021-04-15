@@ -136,7 +136,67 @@ class Pixel_Drawer {
                 this.ctx.fillStyle = grd;
                 this.ctx.fillRect(x-radius, y-radius ,radius*2,radius*2);
     }
+    draw_pixel_hexagon(scaled_pixel){
+        this.ctx.strokeStyle = "hsla(" + scaled_pixel.hue + ", 50%, 50%, "+scaled_pixel.brightness+")";
+        this.ctx.fillStyle = "hsla(" + scaled_pixel.hue + ", 50%, 50%, "+scaled_pixel.brightness+")";
+        this.draw_hexagon(scaled_pixel.x, scaled_pixel.y, scaled_pixel.scaled_w)
+    }
+    draw_hexagon(x,y,r){
+        var a = 2 * Math.PI / 6;
+        // if(x % 2 == 0){
+        //     x = x*r + r + r * Math.cos(a);
+        //     y = y*r + r * Math.sin(a);
+        // }else{
+        //     x = x*2*r + r + r * Math.cos(a);
+        //     y = y*2*r - Math.sin(a);
+        // }
+        // if(parseInt(x) % 2 == 0){
+        //     x = x * 1.5*r +r * Math.cos(a) ;
+        //     y = y * 1.5* r+ r*Math.sin(a);
+        // }else{
+        //     x = x * 1.5 * r +r * Math.cos(a) ;
+        //     y = y * 1.5 * r;
+        // }
+        var i = x;
+        var j = y;
+
+        var hexRadius = r;
+        var b = hexRadius;
+        var c = hexRadius;
+        var alpha = a;
+        var sideLength = Math.sqrt(b*b + c*c - 2*b*c * Math.cos(alpha));
+        var a = sideLength;
+        var inner_circle_radius = Math.sqrt(-((a/2)*(a/2))+hexRadius*hexRadius);
+        var hexRectangleWidth = r*2;
+        var hexRectangleWidth = inner_circle_radius*2;
+
+        var hexHeight = inner_circle_radius;
+
+        // var x = i * hexRectangleWidth + ((j % 2) * hexRadius);
+        // var y = j * (sideLength + hexHeight);
+
+        // var x = inner_circle_radius * 2 * x + ((parseInt(y)%2==0)*inner_circle_radius);
+        // var y = y * ((sideLength/2) + hexRadius)
+
+        //something with the offset is not rright at the time
+        var y = inner_circle_radius * 2 * y + (x%2)*hexRadius//+ ((x%2)*inner_circle_radius);
+        var x = x * ((sideLength/2) + hexRadius)
+        
+        this.draw_hexagon_x_y(x,y, r);
+        
+    }
+    draw_hexagon_x_y(x, y, r){
+        this.ctx.beginPath();
+        var a = 2 * Math.PI / 6;
+        for (var i = 0; i < 6; i++) {
+            var theta = a*i//+((2 * Math.PI / 6)/2);
+          this.ctx.lineTo(x + r * Math.cos(theta), y + r * Math.sin(theta));
+        }
+        this.ctx.closePath();
+        this.ctx.fill();
+      }
     draw_pixel_backlight(scaled_pixel) {
+
         this.draw_pixel_backlight_new(scaled_pixel);
         return 
         //circluar backlight
@@ -267,6 +327,7 @@ class Pixel_Drawer {
         
         // draw layers separatly
         var stuff = [ "backlight", "border", "light"];
+        //var stuff = [ "hexagon"];
 
         for (var key in stuff) {
             var name = stuff[key];
