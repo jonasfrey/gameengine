@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+        .game_console{
+            position: fixed;
+            z-index: 20;
+            top:0;
+            right: 0;
+            color:lightgreen;
+            font-family: monospace;
+            height: 100px;
+            overflow-y:scroll;
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Game} from './Game.js';
+    
+    window.g = new Game()
+    var game = window.g;
+
+    game.pixel_drawer.scale_x = 10;
+    game.pixel_drawer.scale_y = 10;
+    game.pixel_grid_width = 12;
+    game.pixel_grid_height = 22;
+
+    Pixel_Drawer.parse_to_integer = true;
+
+    game.wall_ms = "";
+
+    for(var y = 0; y < game.pixel_grid_height; y++ ){
+        for(var x = 0; x< game.pixel_grid_width; x++){
+            if(
+                y == 0|| y+1 == game.pixel_grid_height ||
+                x == 0 || x+1 == game.pixel_grid_width
+            ){
+                game.wall_ms += "x"
+            }else{
+                game.wall_ms += " "
+            }
+        }
+        game.wall_ms += "\n"
+    }
+    game.wall = new Game_Object(game.wall_ms);
+    game.wall.name = "wall"
+    game.wall.position_point_3_d.x = -game.pixel_grid_width/2
+    game.wall.position_point_3_d.y = -game.pixel_grid_height/2
+    // use it for a fancy time strech effect :) ! 
+
+
+    game.wall.brightness = 0.6;
+
+        //spawn brick
+        game.brick_multiline_strings = [
+`
+x 
+xx
+x 
+`, 
+`
+x
+x
+x
+x
+`,
+`
+x 
+xx
+ x
+`,
+`
+x 
+x 
+xx
+`,
+`
+xx
+xx
+`]
+    game.spawn_brick = function(){
+        
+
+        var rand_brick_multiline_string = this.brick_multiline_strings[Math.floor(Math.random() * this.brick_multiline_strings.length)];
+        //for testing
+        //var rand_brick_multiline_string = `\nxx\nxx`;
+        //var rand_brick_multiline_string = this.brick_multiline_strings[4];
+        var brick = new Game_Object(rand_brick_multiline_string);
+        
+        this.brick = brick;
+        brick.name = "brick"
+        brick.hue = Math.random()*360
+        brick.brightness = 0.7;
+
+        brick.position_point_3_d.x = this.wall.position_point_3_d.x + this.wall.points_object.width / 2;
+        brick.position_point_3_d.y = this.wall.position_point_3_d.y + 1;
+        
+        brick.position_velocity_point_3_d.y = 0.2;
+
+        //custom prop
+        brick.onground = false;
+
+        // brick.render_function = function(){
+            
+        //     this.position_point_3_d.y += 0.05
+
+
+        //     if(this.points_object.points.length < 1){
+        //         this.destroy();
+        //     }
+
+        //     //check if brick would collide 
+
+        //     if(!this.onground){
+
+
+        //             // if (game.keydownsups["keyCode_38"].down) {
+
+        //             //     //check if rotation is even possible , if to close to wall rotation should not be possible
+        //             //     var max = Math.max(this.points_object.width, this.points_object.height);
+        //             //     // if(
+        //             //     //     this.position_point_3_d.x >= max-1 
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.x <= game.wall_width  - max
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.y >= max 
+        //             //     //     &&
+        //             //     //     this.position_point_3_d.y <= game.wall_height - max
+        //             //     // ){
+        //             //         // up arrow
+        //             //         if(!game.keydownsups["keyCode_38"].down_lock){
+
+        //             //             this.rotation_point_3_d.x += Math.PI*2/4;
+
+        //             //             game.keydownsups["keyCode_38"].down_lock = true;
+        //             //         }
+        //             //     //}
+        //             // }else{
+        //             //     //when key released 
+        //             //     game.keydownsups["keyCode_38"].down_lock = false;
+        //             // }
+
+        //             // if (game.keydownsups["keyCode_40"].down) {
+        //             //     // down arrow
+        //             //     this.position_velocity_point_3_d.y = 0.5;
+        //             // }
+
+        //             // if (game.keydownsups["keyCode_37"].down) {
+        //             //     //if(this.position_point_3_d.x > 2){
+        //             //         // left arrow
+        //             //         if(!game.keydownsups["keyCode_37"].down_lock){
+
+        //             //             this.position_point_3_d.x -=1;
+        //             //             game.keydownsups["keyCode_37"].down_lock = true;
+        //             //         }else{
+        //             //             //optional movement speed when stayed on key
+        //             //             this.position_point_3_d.x -=0.1;
+        //             //         }
+        //             //     //}
+        //             // }else{
+        //             //     game.keydownsups["keyCode_37"].down_lock = false;
+        //             // }
+        //             // if (game.keydownsups["keyCode_39"].down) {
+        //             //     //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
+            
+        //             //         // right arrow
+        //             //         if(!game.keydownsups["keyCode_39"].down_lock){
+
+        //             //             this.position_point_3_d.x +=1;
+        //             //             game.keydownsups["keyCode_39"].down_lock = true;
+        //             //         }else{
+        //             //             //optional movement speed when stayed on key
+        //             //             this.position_point_3_d.x +=0.1;
+        //             //         }
+        //             //     //}
+                        
+        //             // }else{
+        //             //     game.keydownsups["keyCode_39"].down_lock = false;
+        //             // }
+
+        //     }else{
+        //         this.brightness = 0.5;
+        //     }
+        // }
+
+        brick.collision_function = function(collision_objects_array){
+
+            var collidet_with_wall = false;
+            for(var key in collision_objects_array){
+                var co = collision_objects_array[key];
+                if(co.game_object == this){
+                    continue;
+                }
+                if(
+                    co.game_object.name == "wall"
+                    ||
+                    true
+                    ){
+                    collidet_with_wall = true;
+                    break;
+                }
+            }
+            if(collidet_with_wall){
+                //debugger;
+                //reset position to last rendered one, since the collision function is called after the calculate_point_3_d function 
+                this.position_point_3_d.x = (this._last_rendered_this_json_position_point_3_d._x); // because its json which does not come with the getters/setters we have to access _x
+                this.position_point_3_d.y = (this._last_rendered_this_json_position_point_3_d._y); // because its json which does not come with the getters/setters we have to access _x
+                
+                //this.position_point_3_d.x = parseInt(this.position_point_3_d.last_x); // because its json which does not come with the getters/setters we have to access _x
+                //this.position_point_3_d.y = parseInt(this.position_point_3_d.last_y);
+
+                //remove velocity 
+                this.position_velocity_point_3_d.y = 0;
+
+                // // a hacky workaround , set brightiness to 0 hide collision, brightness will be set to 0.5 in the next render function since onground == true
+                // this.brightness = 0;
+                
+                this.onground = true;
+
+                game.spawn_brick();
+                // disable further collision function on this object
+                this.collision_function = function(){}
+
+            }
+        }
+
+    }
+
+    game.spawn_brick();
+
+    game.start_rendering();
+
+    </script>
+
+
+
+</body>
+</html>

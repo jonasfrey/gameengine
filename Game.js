@@ -119,6 +119,8 @@ class Game {
 
         for(var key in Game_Object.instances){
             var o = Game_Object.instances[key];
+            
+            o._last_rendered_this_json_position_point_3_d = JSON.parse(JSON.stringify(o.position_point_3_d))
 
             o.render_id ++; 
             if(o.render_id_limit > 0 && o.render_id >= o.render_id_limit){
@@ -145,52 +147,63 @@ class Game {
              * points
              * */
 
+            //detect collisions
+
             // tthis points will not be the same as o.points_object.points ! var points = o.points_object.get_rotated_points_around_center_by_radians(o.rotation_point_3_d.x, o.points_object.points);
             // this is dangerous because for example points_object.delete_point_by_point(point) won't work
             
             // tmp disable collisions
-            // for(var key in o.points_object.pixel_drawer_points){
-                
-            //     var point = o.points_object.pixel_drawer_points[key];
 
-            //     if(this.collision_objects[point.int_parsed_to_x_y_string()] == undefined){
-            //         this.collision_objects[point.int_parsed_to_x_y_string()] = [];
-            //     } 
-                
-            //     this.collision_objects[point.int_parsed_to_x_y_string()].push({game_object: o, point_relative_to_game_object: point, collision_x_y_absolute : {x:x,y:y}})
-
-                
-            // }
+            for(var key in o.points_object.points){
+                var point = o.points_object.points[key];
+                if(this.collision_objects[point.int_parsed_to_x_y_string()] == undefined){
+                    this.collision_objects[point.int_parsed_to_x_y_string()] = [];
+                } 
+                this.collision_objects[point.int_parsed_to_x_y_string()].push(
+                        {
+                            game_object: o,
+                            point_3_d: point,
+                        }
+                    )
+            }
             
             //o.render_function();
-            
-            
+
         }
         //tmp disable collisions
-        // for(var key in this.collision_objects){
-        //     var cos_on_pixel = this.collision_objects[key];
+        for(var key in this.collision_objects){
+            var collision_objects_on_point_3_d = this.collision_objects[key];
+            //a collision has occured if  => 23|32 : [{...}, {...}] two objects
+            //if array has only one object, no collision has occured on this int parsed point_3_d => 23|32 : [{...}] only one object 
+            
+            if(collision_objects_on_point_3_d.length<=1){
+                continue;
+            }
 
-        //     for(var key in cos_on_pixel){
-        //         var co = cos_on_pixel[key];
-        //         var cos_on_pixel_without_co = cos_on_pixel.filter(asdf => asdf != co);
-        //         //console.log(cos_on_pixel);
-        //         // a collision of two pixels of the same object can occur since when an object is rotated two pixels may get 2.3¦4.4 and 2.1¦4.1 and then parseInt() since no subpixel rendering will make integers out of floats
-        //         var not_this_collision_object = cos_on_pixel.filter(asdf => asdf.game_object != co.game_object)
+            for(var key in collision_objects_on_point_3_d){
+
+                var collision_object_on_point_3_d = collision_objects_on_point_3_d[key];
                 
-        //         if(cos_on_pixel.length > 1){
-        //             co.game_object.collision_function(not_this_collision_object, co)
-        //         }
-        //         var point = co.point_relative_to_game_object;                
+                var other_collision_objects_on_point_3_d = collision_objects_on_point_3_d.filter(
+                    asdf => asdf != collision_object_on_point_3_d
+                    );
+
+                // // a collision of two pixels of the same object can occur  
+                // // when an object is rotated two pixels may get 2.3¦4.4
+                // // and 2.1¦4.1 and then parseInt() since no subpixel 
+                // // rendering will make integers out of floats
+                // var other_collision_objects_game_object_on_point_3_d = other_collision_objects_on_point_3_d.filter(
+                //     asdf => asdf.game_object != collision_object_on_point_3_d.game_object
+                //     )
+                // if(other_collision_objects_game_object_on_point_3_d.length > 1){
+                //     collision_object_on_point_3_d.game_object.collision_function(other_collision_objects_game_object_on_point_3_d)
+                // }
+
+                collision_object_on_point_3_d.game_object.collision_function(other_collision_objects_on_point_3_d)
+
                 
-        //         var hue = point.hue || co.game_object.hue;
-        //         var brightness = point.brightness || co.game_object.brightness;
-
-        //         var x = parseInt(co.game_object.position_point_3_d.x + point.x);
-        //         var y = parseInt(co.game_object.position_point_3_d.y + point.y);
-
-        //         //this.pixel_drawer.add_pixel({x:x , y: y, hue: hue, brightness: brightness})
-        //     }
-        // }
+            }
+        }
 
         this.pixel_drawer.render_pixel_drawer_point_3_d_instances();
     }
@@ -208,6 +221,7 @@ class Game {
         }
         return "["+str_str+"]"
     }
+    
     render_loop(){
 
         //console.log("render_loop was called");
