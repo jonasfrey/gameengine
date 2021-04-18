@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+        .game_console{
+            position: fixed;
+            z-index: 20;
+            top:0;
+            right: 0;
+            color:lightgreen;
+            font-family: monospace;
+            height: 100px;
+            overflow-y:scroll;
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Game} from './Game.js';
+    
+    window.g = new Game()
+    var game = window.g;
+
+    game.pixel_drawer.scale_x = 10;
+    game.pixel_drawer.scale_y = 10;
+    game.pixel_grid_width = 33;
+    game.pixel_grid_height = 33;
+
+    Pixel_Drawer.parse_to_integer = true;
+
+    game.wall_ms = "";
+
+    
+
+    for(var y = 0; y < game.pixel_grid_height+2; y++ ){
+        for(var x = 0; x< game.pixel_grid_width+2; x++){
+            if(
+                y == 0|| y+1 == game.pixel_grid_height+2 ||
+                x == 0 || x+1 == game.pixel_grid_width+2
+            ){
+                game.wall_ms += "x"
+            }else{
+                game.wall_ms += " "
+            }
+        }
+        game.wall_ms += "\n"
+    }
+    game.wall = new Game_Object(game.wall_ms);
+    game.wall.name = "wall"
+    game.wall.position_point_3_d.x = -game.pixel_grid_width/2 - 1
+    game.wall.position_point_3_d.y = -game.pixel_grid_height/2 - 1
+    // use it for a fancy time strech effect :) ! 
+
+    game.wall.brightness = 0.6;
+
+    game.snake = new Game_Object();
+    game.snake.movement_speed = 0.2;
+    game.snake.position_velocity_point_3_d.x = game.snake.movement_speed;
+
+
+    game.get_random_point_3_d_inside_bounds = function(){
+        var x = Math.random()*this.pixel_grid_width - this.pixel_grid_width/2;
+        var y = Math.random()*this.pixel_grid_height - this.pixel_grid_height/2;
+        var z = 0;
+        var p3d = new Point_3_D(x,y,z);
+        return p3d;
+    }
+
+    game.fps = 2;
+    game.render_delta_limit_ms = 500;
+
+    game.reposition_if_out_of_bounds = function(game_object){
+        var self = game_object || this;
+
+        if(self.position_point_3_d.x < -game.pixel_grid_width/2){
+            self.position_point_3_d.x = game.pixel_grid_width/2;
+        }
+        if(self.position_point_3_d.y < -game.pixel_grid_height/2){
+            self.position_point_3_d.y = game.pixel_grid_height/2;
+        }
+
+
+        if(self.position_point_3_d.x > game.pixel_grid_width/2){
+            self.position_point_3_d.x = -game.pixel_grid_width/2;
+        }
+        if(self.position_point_3_d.y > game.pixel_grid_height/2){
+            self.position_point_3_d.y = -game.pixel_grid_height/2;
+        }
+        // prevent this from getting out of the screen
+        // for the moment i dont have the modulo solution without an if , if there even is one , using 0 and 1 (true false) as factor is not counting as a solution without an if
+        // self.position_point_3_d.x = (self.position_point_3_d.x % (game.pixel_grid_width/2));
+        // self.position_point_3_d.y = self.position_point_3_d.y % (game.pixel_grid_height);
+    }
+
+
+
+
+    game.snake.render_function = function(){
+
+        console.log(this.position_point_3_d.x);
+        //game.reposition_if_out_of_bounds(this);
+
+        if (game.keydownsups["key_ArrowDown"].down) {
+                if(!game.keydownsups["key_ArrowDown"].down_locked){
+                    // when key pressed first time after released
+                    this.position_velocity_point_3_d = new Point_3_D(0, this.movement_speed, 0)
+                    game.keydownsups["key_ArrowDown"].down_locked = true;
+                }
+            //when staying on key
+        }else{
+            //when key released 
+            game.keydownsups["key_ArrowDown"].down_locked = false;
+        }
+        if (game.keydownsups["key_ArrowUp"].down) {
+                if(!game.keydownsups["key_ArrowUp"].down_locked){
+                    // when key pressed first time after released
+                    this.position_velocity_point_3_d = new Point_3_D(0, -this.movement_speed, 0)
+                    game.keydownsups["key_ArrowUp"].down_locked = true;
+                }
+            //when staying on key
+        }else{
+            //when key released 
+            game.keydownsups["key_ArrowUp"].down_locked = false;
+        }
+
+        if (game.keydownsups["key_ArrowLeft"].down) {
+                if(!game.keydownsups["key_ArrowLeft"].down_locked){
+                    // when key pressed first time after released
+                    this.position_velocity_point_3_d = new Point_3_D( -this.movement_speed, 0, 0)
+                    game.keydownsups["key_ArrowLeft"].down_locked = true;
+                }
+            //when staying on key
+        }else{
+            //when key released 
+            game.keydownsups["key_ArrowLeft"].down_locked = false;
+        }
+
+        if (game.keydownsups["key_ArrowRight"].down) {
+                if(!game.keydownsups["key_ArrowRight"].down_locked){
+                    // when key pressed first time after released
+                    this.position_velocity_point_3_d = new Point_3_D( this.movement_speed, 0, 0)
+                    game.keydownsups["key_ArrowRight"].down_locked = true;
+                }
+            //when staying on key
+        }else{
+            //when key released 
+            game.keydownsups["key_ArrowRight"].down_locked = false;
+        }
+
+
+    }
+
+    game.snake.collision_function = function(collision_objects_array){
+
+        // var collidet_with_wall = false;
+        // for(var key in collision_objects_array){
+        //     var co = collision_objects_array[key];
+        //     if(co.game_object == this){
+        //         continue;
+        //     }
+        //     if(
+        //         co.game_object.name == "wall"
+        //         ||
+        //         true
+        //         ){
+        //         collidet_with_wall = true;
+        //         break;
+        //     }
+        // }
+    }
+
+    
+
+    game.start_rendering();
+
+    </script>
+
+
+
+</body>
+</html>

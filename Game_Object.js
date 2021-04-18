@@ -127,14 +127,14 @@ class Game_Object {
         
         
         // calc velocity vector
-        this[type+"_velocity_point_3_d"].x = this[type+"_velocity_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._x
-        this[type+"_velocity_point_3_d"].y = this[type+"_velocity_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._y
-        this[type+"_velocity_point_3_d"].z = this[type+"_velocity_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._z
+        this[type+"_velocity_point_3_d"].x = parseFloat(this[type+"_velocity_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._x)
+        this[type+"_velocity_point_3_d"].y = parseFloat(this[type+"_velocity_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._y)
+        this[type+"_velocity_point_3_d"].z = parseFloat(this[type+"_velocity_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._z)
 
         // calc point vector
-        this[type+"_point_3_d"].x = this[type+"_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._x
-        this[type+"_point_3_d"].y = this[type+"_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._y
-        this[type+"_point_3_d"].z = this[type+"_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._z
+        this[type+"_point_3_d"].x = parseFloat(this[type+"_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._x)
+        this[type+"_point_3_d"].y = parseFloat(this[type+"_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._y)
+        this[type+"_point_3_d"].z = parseFloat(this[type+"_point_3_d"]._z + this.basic_speed_object.speed * this[type+"_velocity_point_3_d"]._z)
 
       }
 

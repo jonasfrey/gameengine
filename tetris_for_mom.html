@@ -137,93 +137,96 @@ xx
         brick.position_point_3_d.x = this.wall.position_point_3_d.x + this.wall.points_object.width / 2;
         brick.position_point_3_d.y = this.wall.position_point_3_d.y + 1;
         
-        brick.position_velocity_point_3_d.y = 0.2;
+        //brick.position_velocity_point_3_d.y = 0.2;
 
         //custom prop
         brick.onground = false;
 
-        // brick.render_function = function(){
+        brick.render_function = function(){
+
+        }
+
+        brick.render_function = function(){
             
-        //     this.position_point_3_d.y += 0.05
+            this.position_point_3_d.y += 0.05
+
+            if(this.points_object.points.length < 1){
+                this.destroy();
+            }
+
+            //check if brick would collide 
+
+            if(!this.onground){
 
 
-        //     if(this.points_object.points.length < 1){
-        //         this.destroy();
-        //     }
+                    // if (game.keydownsups["keyCode_38"].down) {
 
-        //     //check if brick would collide 
+                    //     //check if rotation is even possible , if to close to wall rotation should not be possible
+                    //     var max = Math.max(this.points_object.width, this.points_object.height);
+                    //     // if(
+                    //     //     this.position_point_3_d.x >= max-1 
+                    //     //     &&
+                    //     //     this.position_point_3_d.x <= game.wall_width  - max
+                    //     //     &&
+                    //     //     this.position_point_3_d.y >= max 
+                    //     //     &&
+                    //     //     this.position_point_3_d.y <= game.wall_height - max
+                    //     // ){
+                    //         // up arrow
+                    //         if(!game.keydownsups["keyCode_38"].down_lock){
 
-        //     if(!this.onground){
+                    //             this.rotation_point_3_d.x += Math.PI*2/4;
 
+                    //             game.keydownsups["keyCode_38"].down_lock = true;
+                    //         }
+                    //     //}
+                    // }else{
+                    //     //when key released 
+                    //     game.keydownsups["keyCode_38"].down_lock = false;
+                    // }
 
-        //             // if (game.keydownsups["keyCode_38"].down) {
+                    // if (game.keydownsups["keyCode_40"].down) {
+                    //     // down arrow
+                    //     this.position_velocity_point_3_d.y = 0.5;
+                    // }
 
-        //             //     //check if rotation is even possible , if to close to wall rotation should not be possible
-        //             //     var max = Math.max(this.points_object.width, this.points_object.height);
-        //             //     // if(
-        //             //     //     this.position_point_3_d.x >= max-1 
-        //             //     //     &&
-        //             //     //     this.position_point_3_d.x <= game.wall_width  - max
-        //             //     //     &&
-        //             //     //     this.position_point_3_d.y >= max 
-        //             //     //     &&
-        //             //     //     this.position_point_3_d.y <= game.wall_height - max
-        //             //     // ){
-        //             //         // up arrow
-        //             //         if(!game.keydownsups["keyCode_38"].down_lock){
+                    // if (game.keydownsups["keyCode_37"].down) {
+                    //     //if(this.position_point_3_d.x > 2){
+                    //         // left arrow
+                    //         if(!game.keydownsups["keyCode_37"].down_lock){
 
-        //             //             this.rotation_point_3_d.x += Math.PI*2/4;
-
-        //             //             game.keydownsups["keyCode_38"].down_lock = true;
-        //             //         }
-        //             //     //}
-        //             // }else{
-        //             //     //when key released 
-        //             //     game.keydownsups["keyCode_38"].down_lock = false;
-        //             // }
-
-        //             // if (game.keydownsups["keyCode_40"].down) {
-        //             //     // down arrow
-        //             //     this.position_velocity_point_3_d.y = 0.5;
-        //             // }
-
-        //             // if (game.keydownsups["keyCode_37"].down) {
-        //             //     //if(this.position_point_3_d.x > 2){
-        //             //         // left arrow
-        //             //         if(!game.keydownsups["keyCode_37"].down_lock){
-
-        //             //             this.position_point_3_d.x -=1;
-        //             //             game.keydownsups["keyCode_37"].down_lock = true;
-        //             //         }else{
-        //             //             //optional movement speed when stayed on key
-        //             //             this.position_point_3_d.x -=0.1;
-        //             //         }
-        //             //     //}
-        //             // }else{
-        //             //     game.keydownsups["keyCode_37"].down_lock = false;
-        //             // }
-        //             // if (game.keydownsups["keyCode_39"].down) {
-        //             //     //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
+                    //             this.position_point_3_d.x -=1;
+                    //             game.keydownsups["keyCode_37"].down_lock = true;
+                    //         }else{
+                    //             //optional movement speed when stayed on key
+                    //             this.position_point_3_d.x -=0.1;
+                    //         }
+                    //     //}
+                    // }else{
+                    //     game.keydownsups["keyCode_37"].down_lock = false;
+                    // }
+                    // if (game.keydownsups["keyCode_39"].down) {
+                    //     //if(this.position_point_3_d.x < game.wall.points_object.width-1-this.points_object.width){
             
-        //             //         // right arrow
-        //             //         if(!game.keydownsups["keyCode_39"].down_lock){
+                    //         // right arrow
+                    //         if(!game.keydownsups["keyCode_39"].down_lock){
 
-        //             //             this.position_point_3_d.x +=1;
-        //             //             game.keydownsups["keyCode_39"].down_lock = true;
-        //             //         }else{
-        //             //             //optional movement speed when stayed on key
-        //             //             this.position_point_3_d.x +=0.1;
-        //             //         }
-        //             //     //}
+                    //             this.position_point_3_d.x +=1;
+                    //             game.keydownsups["keyCode_39"].down_lock = true;
+                    //         }else{
+                    //             //optional movement speed when stayed on key
+                    //             this.position_point_3_d.x +=0.1;
+                    //         }
+                    //     //}
                         
-        //             // }else{
-        //             //     game.keydownsups["keyCode_39"].down_lock = false;
-        //             // }
+                    // }else{
+                    //     game.keydownsups["keyCode_39"].down_lock = false;
+                    // }
 
-        //     }else{
-        //         this.brightness = 0.5;
-        //     }
-        // }
+            }else{
+                this.brightness = 0.5;
+            }
+        }
 
         brick.collision_function = function(collision_objects_array){
 
