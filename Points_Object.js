@@ -35,6 +35,7 @@ class Points_Object {
       this.pixel_drawer_points = this.get_points_by_multiline_string(this.multiline_string);
       //reference to pixel_drawer_points
       this.points = this.pixel_drawer_points;
+      this.set_width_height_depth();
 
       this.json_copied_points = JSON.parse(JSON.stringify(this.points))
 
@@ -55,6 +56,7 @@ class Points_Object {
    * set the range as _width, _height, or _depth 
    */
   set_width_height_depth(){
+    
     var min_max = {min: {x:0,y:0,z:0}, max:{x:0,y:0,z:0}}
     for(var key in this.points){
       var p = this.points[key];
@@ -65,11 +67,11 @@ class Points_Object {
       if(p.y > min_max.max.y){ min_max.max.y = p.y; }
       if(p.z > min_max.max.z){ min_max.max.z = p.z; }
     }
-  
+    
     // width is the range max-min
-    this._width = Math.abs(min_max.max.x-min_max.min.x);
-    this._height = Math.abs(min_max.max.y-min_max.min.y);
-    this._depth = Math.abs(min_max.max.z-min_max.min.z);
+    this.width = Math.abs(min_max.max.x-min_max.min.x) + 1; // +1 since, index 0 is also a size
+    this.height = Math.abs(min_max.max.y-min_max.min.y) + 1;
+    this.depth = Math.abs(min_max.max.z-min_max.min.z) + 1;
     
   }
 
@@ -172,14 +174,14 @@ class Points_Object {
       if(characters.length == 0){ // skip last line
         continue;
       }
-      // take max y as height
-      if(y >= this.height){
-        this.height = parseInt(y)+1;//+1 because index starts with 0
-      }
-      // take max x as width
-      if(x >= this.width){
-        this.width = parseInt(x)+1;//+1 because index starts with 0
-      }
+      // // take max y as height
+      // if(y+1 > this.height){
+      //   this.height = parseInt(y)+1;//+1 because index starts with 0
+      // }
+      // // take max x as width
+      // if(x+1 > this.width){
+      //   this.width = parseInt(x)+1;//+1 because index starts with 0
+      // }
       for(var x in characters){
         var character = characters[x];
         //space == false, any character == true

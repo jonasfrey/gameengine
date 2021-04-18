@@ -204,7 +204,7 @@ class Game {
                 
             }
         }
-
+        //debugger;
         this.pixel_drawer.render_pixel_drawer_point_3_d_instances();
     }
 

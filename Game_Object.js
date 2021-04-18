@@ -125,7 +125,6 @@ class Game_Object {
       for(var key in types){
         var type = types[key];
         
-        
         // calc velocity vector
         this[type+"_velocity_point_3_d"].x = parseFloat(this[type+"_velocity_point_3_d"]._x + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._x)
         this[type+"_velocity_point_3_d"].y = parseFloat(this[type+"_velocity_point_3_d"]._y + this.basic_speed_object.speed * this[type+"_acceleration_point_3_d"]._y)

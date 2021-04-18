@@ -39,7 +39,6 @@ class Point_3_D {
         },
         set : function(val){
           //for the moment i do not use the getters and setters and the delta history since it is very performance hungry
-
           this["last_"+dv] = this["_"+dv]; //keep order!
           this["_"+dv] = val
           // this["_delta_history_"+dv].push(-1*(val-this["last_"+dv])) //keep orde!

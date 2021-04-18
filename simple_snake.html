@@ -88,8 +88,10 @@
     }
     game.wall = new Game_Object(game.wall_ms);
     game.wall.name = "wall"
-    game.wall.position_point_3_d.x = -game.pixel_grid_width/2 - 1
-    game.wall.position_point_3_d.y = -game.pixel_grid_height/2 - 1
+    //had to remove the canvas translation -cw/2,-ch/2 because calculating with float numbers in js f.e. 0.02 - 0.02 will result in weird stuff like 5.551115123125783e-17... and 0+0.2 will get you suff like 0.20000000000000007.... '
+    //game.wall.position_point_3_d.x = -game.pixel_grid_width/2 - 1 
+    //game.wall.position_point_3_d.y = -game.pixel_grid_height/2 - 1
+
     // use it for a fancy time strech effect :) ! 
 
     game.wall.brightness = 0.6;
@@ -107,8 +109,8 @@
         return p3d;
     }
 
-    game.fps = 2;
-    game.render_delta_limit_ms = 500;
+    // game.fps = 2;
+    // game.render_delta_limit_ms = 500;
 
     game.reposition_if_out_of_bounds = function(game_object){
         var self = game_object || this;
