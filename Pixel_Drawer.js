@@ -97,7 +97,7 @@ class Pixel_Drawer {
             this.canvas.width = this.canvas.parentElement.offsetWidth;
             this.canvas.height = this.canvas.parentElement.offsetHeight;
         }
-        this.ctx.translate(this.canvas.width/2,this.canvas.height/2);
+        //this.ctx.translate(this.canvas.width/2,this.canvas.height/2);
     }
 
     /**
