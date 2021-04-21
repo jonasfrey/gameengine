@@ -84,8 +84,9 @@
         game.wall_ms += "\n"
     }
     game.wall = new Game_Object(game.wall_ms);
-    game.wall.position_point_3_d.x = -game.pixel_grid_width/2
-    game.wall.position_point_3_d.y = -game.pixel_grid_height/2
+
+    game.wall.position_point_3_d.x = 0;//game.pixel_grid_width/2
+    game.wall.position_point_3_d.y = 0;//game.pixel_grid_height/2
     // use it for a fancy time strech effect :) ! 
 
     game.basic_speed = 1;
@@ -107,8 +108,8 @@ xxxx xxxx
     game.spaceship.name = "spaceship"
     game.spaceship.life = 1;
     game.spaceship.hue = 111;
-    game.spaceship.position_point_3_d.x = 0;
-    game.spaceship.position_point_3_d.y = 0;
+    game.spaceship.position_point_3_d.x = game.pixel_grid_width/2;
+    game.spaceship.position_point_3_d.y = game.pixel_grid_height/2;
 
     // we want to have a cool effect on
     // the last 4 points of points_object 
@@ -122,7 +123,7 @@ xxxx xxxx
     game.spaceship.points_flame_rotation_right = game.spaceship.points_object.points.filter(function(value, key){return [25].indexOf(key) != -1})
 
     // now the render funciton
-    game.spaceship.rotation_speed = Math.PI * 2 / 1024;
+    game.spaceship.rotation_speed = Math.PI * 2 / 2048;
     game.spaceship.movement_speed = 0.03;
     game.spaceship.movement_speed_backwards = 0.01;
     
@@ -155,7 +156,7 @@ xxxx xxxx
          * spacebar = 32
         **/
 
-        if (game.keydownsups["keyCode_37"].down) {
+        if (game.keydownsups["key_ArrowLeft"].down) {
             // i dont know what axis this is , depends on the view of the game , in a top down shooter it could be the yaw axis... just using x for now
             this.rotation_velocity_point_3_d.x -= this.rotation_speed * game.basic_speed;
             
@@ -165,7 +166,7 @@ xxxx xxxx
             this.hide_points(this.points_flame_rotation_left)
         }
 
-        if (game.keydownsups["keyCode_38"].down) {
+        if (game.keydownsups["key_ArrowUp"].down) {
             
             //some fancy math for the movement direction wich is depending on the rotation
             this.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* this.movement_speed * game.basic_speed;
@@ -178,7 +179,7 @@ xxxx xxxx
             //hide the flame points if arrow up not pressed
             this.hide_points(this.points_flame);
         }
-        if (game.keydownsups["keyCode_39"].down) {
+        if (game.keydownsups["key_ArrowRight"].down) {
             //this.position_velocity_point_3_d.x += this.movement_speed * game.basic_speed;
             this.rotation_velocity_point_3_d.x += this.rotation_speed * game.basic_speed;
 
@@ -188,7 +189,7 @@ xxxx xxxx
         }else{
             this.hide_points(this.points_flame_rotation_right)
         }
-        if (game.keydownsups["keyCode_40"].down) {
+        if (game.keydownsups["key_ArrowDown"].down) {
             game.pixel_drawer.clear_color = "hsla(0,0%, 0%, 0.1)";
             // slow mo go ! 
             game.basic_speed = 0.5;
@@ -211,7 +212,7 @@ xxxx xxxx
             this.hide_points(this.points_flame_backwards)
         }
 
-        if (game.keydownsups["keyCode_32"].down) {
+        if (game.keydownsups["key_ "].down) {
 
             this.shoot();
         }
@@ -257,22 +258,30 @@ xxxx xxxx
 
     game.spaceship.collision_function = function(array){
         //this.life -= 0.1;
-        array.forEach((val)=>console.log(val.game_object.name))
+        for(var key in array){
+            var val = array[key];
+            if(val.game_object != this){
+                this.hue = Math.random()*360;
+            }
+        }
+
+
     }
 
     game.destroy_if_out_of_bounds = function(game_object){
         var self = game_object || this;
         if(
-                self.position_point_3_d.x < -(game.pixel_grid_width/2) ||
-                self.position_point_3_d.x > (game.pixel_grid_width/2) ||
-                self.position_point_3_d.y < -(game.pixel_grid_height/2) ||
-                self.position_point_3_d.y > (game.pixel_grid_height/2)
+                self.position_point_3_d.x < 0 ||
+                self.position_point_3_d.x > game.pixel_grid_width ||
+                self.position_point_3_d.y < 0 ||
+                self.position_point_3_d.y > game.pixel_grid_height
                     ){
                 self.destroy();
                 return true;
         }
         return false;
     }
+
     game.get_random_point_3_d_inside_bounds = function(){
         var x = Math.random()*this.pixel_grid_width - this.pixel_grid_width/2;
         var y = Math.random()*this.pixel_grid_height - this.pixel_grid_height/2;
@@ -284,19 +293,19 @@ xxxx xxxx
     game.reposition_if_out_of_bounds = function(game_object){
         var self = game_object || this;
 
-        if(self.position_point_3_d.x < -game.pixel_grid_width/2){
-            self.position_point_3_d.x = game.pixel_grid_width/2;
+        if(self.position_point_3_d.x < 0){
+            self.position_point_3_d.x = game.pixel_grid_width;
         }
-        if(self.position_point_3_d.y < -game.pixel_grid_height/2){
-            self.position_point_3_d.y = game.pixel_grid_height/2;
+        if(self.position_point_3_d.y < 0){
+            self.position_point_3_d.y = game.pixel_grid_height;
         }
 
 
-        if(self.position_point_3_d.x > game.pixel_grid_width/2){
-            self.position_point_3_d.x = -game.pixel_grid_width/2;
+        if(self.position_point_3_d.x > game.pixel_grid_width){
+            self.position_point_3_d.x = 0;
         }
-        if(self.position_point_3_d.y > game.pixel_grid_height/2){
-            self.position_point_3_d.y = -game.pixel_grid_height/2;
+        if(self.position_point_3_d.y > game.pixel_grid_height){
+            self.position_point_3_d.y = 0;
         }
         // prevent this from getting out of the screen
         // for the moment i dont have the modulo solution without an if , if there even is one , using 0 and 1 (true false) as factor is not counting as a solution without an if
@@ -405,16 +414,88 @@ x   x
                 var other_collision_object = array[key];
 
                 if(other_collision_object.game_object.name == "shot"){
-                    this.hue = other_collision_object.game_object.hue;
+                    //this.hue = other_collision_object.game_object.hue;
+                    //this.destroy();
+                    
+                    this.brightness = Math.max(0, this.brightness-0.1);
                 }
+
             }
         }
     }
 
-    var amount_asteroids = 15;
+    var amount_asteroids = 5;
     for(var i = 0; i < amount_asteroids; i++){
         spawn_asteroid();
     }
+
+    game.space_ship_observer = new Game_Object(
+`  
+ x 
+ x 
+xxx
+`
+)
+    game.space_ship_observer.position_point_3_d.x = game.pixel_grid_width/2;
+    game.space_ship_observer.position_point_3_d.y = game.pixel_grid_height/2;
+
+    game.space_ship_observer.point_gun_barrel = game.space_ship_observer.points_object.points.filter(function(value, key){return key == 0})[0]
+    
+
+    game.rotate_game_object_to_game_object_target = function(game_object, game_object_target){
+        
+        var position_point_3_d_delta_x = game_object_target.position_point_3_d.x - game_object.position_point_3_d.x;
+        var position_point_3_d_delta_y = game_object_target.position_point_3_d.y - game_object.position_point_3_d.y;
+        var position_point_3_d_delta_z = game_object_target.position_point_3_d.z - game_object.position_point_3_d.z;
+
+        var radians = Math.atan2(position_point_3_d_delta_y, position_point_3_d_delta_x)+ Math.PI/4*2;
+
+        game_object.rotation_point_3_d.x = radians;
+
+
+    }
+    game.space_ship_observer.set_random_shoot_timeout = function(){
+        this.random_shoot_timeout = this.render_id + Math.random()*50;
+    }
+    game.space_ship_observer.set_random_shoot_timeout();
+
+    game.space_ship_observer.render_function = function(){
+        game.rotate_game_object_to_game_object_target(this, game.spaceship);
+        if(this.render_id >= this.random_shoot_timeout){
+            this.set_random_shoot_timeout();
+            this.hue = Math.random()*360;
+            this.shoot();
+        }        
+    }
+
+    game.space_ship_observer.shoot = function(){
+
+
+        var shot = new Game_Object(`\nx`);
+
+        //shot.hue = this.hue;
+        shot.movement_speed = 1;
+        // shot direction depening on the rotation of the spaceship 
+        shot.position_velocity_point_3_d.x -= (Math.sin((Math.PI * 2) - this.rotation_point_3_d.x))* shot.movement_speed ;
+        shot.position_velocity_point_3_d.y  -= (Math.cos(this.rotation_point_3_d.x))* shot.movement_speed;
+
+        shot.rotation_point_3_d.x = this.rotation_point_3_d.x;
+        shot.rotation_point_3_d.y = this.rotation_point_3_d.y;
+
+    
+        shot.position_point_3_d.x = this.point_gun_barrel.x;
+        shot.position_point_3_d.y = this.point_gun_barrel.y;
+
+        shot.basic_speed_object = this.basic_speed_object;
+
+        shot.render_function = function(){
+            // shot.position_velocity_point_3_d.x = shot.position_velocity_point_3_d.x * game.basic_speed;
+            // shot.position_velocity_point_3_d.y = shot.position_velocity_point_3_d.y * game.basic_speed;
+            game.destroy_if_out_of_bounds(this);
+        }
+
+    }
+
 
 
     game.start_rendering();

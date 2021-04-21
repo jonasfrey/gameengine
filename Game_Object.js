@@ -57,6 +57,10 @@ class Game_Object {
       this.collision_function = function(){return false}
       this.render_function = function(){return false}
     
+
+      this.brightness = 1;
+      this.hue = 1;
+      
       
       console.log(this + "was constructed");
     }
@@ -66,18 +70,18 @@ class Game_Object {
     }
     set hue(val){
       this._hue = val;
-      for(var key in this.points_object.pixel_drawer_points){
-        this.points_object.pixel_drawer_points[key].hue = val;
+      for(var key in this.points_object.points){
+        this.points_object.points[key].hue = val;
       }
       
     }
     get brightness(){
-      return this._hue;
-    }
+      return this._brightness;
+    } 
     set brightness(val){
       this._brightness = val;
-      for(var key in this.points_object.pixel_drawer_points){
-        this.points_object.pixel_drawer_points[key].brightness = val;
+      for(var key in this.points_object.points){
+        this.points_object.points[key].brightness = val;
       }
       
     }
