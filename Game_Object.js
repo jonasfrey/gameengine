@@ -87,15 +87,25 @@ class Game_Object {
     }
 
     delete_point_by_object(point_object){
+      var deleted = false;
       for(var key in this.points_object.points){
-
+        if(deleted){
+          continue;
+        }
         var point = this.points_object.points[key];
+
         if(point_object == point){ 
           this.points_object.points.splice(key, 1);
-          return true;
+          deleted = true;
           //return delete point;
         }
       }
+ 
+      if(this.points_object.points.length == 0){
+        //this.destroy();
+        //this.points_object.destroy();
+      }
+      return true;
     }
 
     delete_point_by_x_y_z(x,y,z){
@@ -151,6 +161,10 @@ class Game_Object {
 
     }
     transform_points_by_absolute(){
+
+      if(this.points_object.points.length == 0){
+        return;
+      }
       
       // now translate, rotate or scale the pixel object
 
@@ -160,6 +174,7 @@ class Game_Object {
 
       var rotated_points = this.points_object.get_rotated_points_around_center_by_radians(
         this.rotation_point_3_d.x,
+        // i have to find a solution for json_copied_points, since an object can gain or lose point_3_ds 
         JSON.parse(JSON.stringify(this.points_object.json_copied_points)) // <- a json copy of the origin points in the constructor function
       );
       
@@ -184,10 +199,15 @@ class Game_Object {
         
         var p = translated_points[k];
         
-        //since we are using json copied points we have to use the "private" props with the underline prefix '_...'
-        this.points_object.pixel_drawer_points[k].x = p._x;
-        this.points_object.pixel_drawer_points[k].y = p._y;
-        this.points_object.pixel_drawer_points[k].z = p._z;
+        try {
+          //since we are using json copied points we have to use the "private" props with the underline prefix '_...'
+          this.points_object.pixel_drawer_points[k].x = p._x;
+          this.points_object.pixel_drawer_points[k].y = p._y;
+          this.points_object.pixel_drawer_points[k].z = p._z;
+          
+        } catch (error) {
+          // it can be the case that an object has gained point_3_d or lost point_3_d
+        }
       }
 
 

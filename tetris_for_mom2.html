@@ -58,6 +58,7 @@
     import {Point_3_D}from './Point_3_D.js';
     import {Game_Object} from './Game_Object.js';
     import {Game} from './Game.js';
+    import { Pixel_Drawer_Point_3_D } from './Pixel_Drawer_Point_3_D.js';
     
     window.g = new Game()
     var game = window.g;
@@ -95,10 +96,203 @@
 
     game.wall.position_point_3_d.x = 20
     game.wall.position_point_3_d.y = 20
+
+    // this wont work for now, i have really strange anomalies with the 0 origin point border 0|0 
+    game.wall.position_point_3_d.x = 0
+    game.wall.position_point_3_d.y = 0
+
+
+    // also there is strange behaviour with 1
+    game.wall.position_point_3_d.x = 1
+    game.wall.position_point_3_d.y = 1
+
+    game.wall.position_point_3_d.x = 2
+    game.wall.position_point_3_d.y = 2
     // use it for a fancy time strech effect :) ! 
 
 
     game.wall.brightness = 0.6;
+
+    // game.wall.render_function = function(){
+
+        //detect if row is full
+
+        // for(var key in Game_Object.instances){
+        //     var Game_Object_instances = Game_Object.instances[key];
+        //     for(var key in Game_Object_instances){
+        //         var Game_Object_instance = Game_Object_instances[key];
+        //     }
+        // }
+
+        // var y_grouped_Pixel_Drawer_Point_3_D_instances = {};
+
+        // for(var key in Pixel_Drawer_Point_3_D.instances){
+        //     var Pixel_Drawer_Point_3_D_instance = Pixel_Drawer_Point_3_D.instances[key];
+        //     if(y_grouped_Pixel_Drawer_Point_3_D_instances[parseInt(Pixel_Drawer_Point_3_D_instance.y)] == undefined){
+        //         y_grouped_Pixel_Drawer_Point_3_D_instances[parseInt(Pixel_Drawer_Point_3_D_instance.y)] = [];
+        //     }
+        //     var wall_thickness = 1;
+        //     var in_wall_bounds = 
+        //         parseInt(Pixel_Drawer_Point_3_D_instance.y) > this.position_point_3_d.y && 
+        //         parseInt(Pixel_Drawer_Point_3_D_instance.y) < this.position_point_3_d.y+ this.points_object.height-wall_thickness &&
+        //         parseInt(Pixel_Drawer_Point_3_D_instance.x) > this.position_point_3_d.x && 
+        //         parseInt(Pixel_Drawer_Point_3_D_instance.x) < this.position_point_3_d.x+ this.points_object.width-wall_thickness 
+
+        //         ;
+        //     if(in_wall_bounds){
+        //         y_grouped_Pixel_Drawer_Point_3_D_instances[parseInt(Pixel_Drawer_Point_3_D_instance.y)].push(Pixel_Drawer_Point_3_D_instance)
+        //     }
+        // }
+        // if(Pixel_Drawer_Point_3_D.instances.length > 68){
+        //     for(var key in y_grouped_Pixel_Drawer_Point_3_D_instances ){
+        //         var y_grouped_Pixel_Drawer_Point_3_D_instances_row_instances = y_grouped_Pixel_Drawer_Point_3_D_instances[key];
+
+        //         if(y_grouped_Pixel_Drawer_Point_3_D_instances_row_instances.length >= 10){
+        //             var y = y_grouped_Pixel_Drawer_Point_3_D_instances_row_instances[0].y;
+                
+        //             for(var key in y_grouped_Pixel_Drawer_Point_3_D_instances_row_instances){
+        //                 var y_grouped_Pixel_Drawer_Point_3_D_instances_row_instance = y_grouped_Pixel_Drawer_Point_3_D_instances_row_instances[key];
+        //                 y_grouped_Pixel_Drawer_Point_3_D_instances_row_instance.destroy();
+        //             }
+
+        //             for(var key in Pixel_Drawer_Point_3_D.instances){
+        //                 debugger
+        //                 var Pixel_Drawer_Point_3_D_instance = Pixel_Drawer_Point_3_D.instances[key];
+        //                 if(Pixel_Drawer_Point_3_D_instance.y < y){
+        //                     Pixel_Drawer_Point_3_D_instance.y +=1;
+        //                 }
+        //             }
+
+        //         }
+        //     }
+        // }
+
+        // for(var y_height = 0; y_height < this.points_object.height-2; y_height++){
+        //     var points_in_row = [];
+        //     var row_full = true;
+            
+        //     // console.log("new row");
+
+        //     var real_y = this.position_point_3_d.y + y_height + 1;//+ 1 because wall 'thickness'
+        //     var x_len = this.points_object.width -2;
+        //     for(var x = 0; x < x_len; x++){
+        //         var real_x = this.position_point_3_d.x + x + 1;// +1  because wall 'thickness'
+        //         // console.log("real_x+'|'+real_y");
+        //         // console.log(real_x+"|"+real_y);
+        //         //var objs = game._last_rendered_collision_objects[real_x+"|"+real_y];
+        //         for(var key in Pixel_Drawer_Point_3_D.instances){
+        //             var Pixel_Drawer_Point_3_D_instance = Pixel_Drawer_Point_3_D.instances[key];
+        //             if(
+        //                 Pixel_Drawer_Point_3_D_instance.x == real_x &&
+        //                 Pixel_Drawer_Point_3_D_instance.y == real_y
+        //             ){
+        //                 points_in_row.push(Pixel_Drawer_Point_3_D_instance);
+
+        //             }
+        //         }
+        //         // if(objs== undefined){
+        //         //     row_full = false;
+        //         //     continue;
+        //         // }
+        //         // for(var key in objs){
+        //         //     var obj = objs[key];
+        //         //     if(obj.game_object != this){
+        //         //         points_in_row.push(obj);
+        //         //     }
+        //         // }
+
+        //     }
+        //     var row_full = points_in_row.length >= x_len;
+        //     if(row_full){
+        //         debugger;
+
+        //         for(var key in Pixel_Drawer_Point_3_D.instances){
+        //             for(var key in points_in_row){
+        //                 var point_in_row = points_in_row[key];
+        //                 point_in_row.point_3_d.destroy();
+        //             }
+
+        //             var Pixel_Drawer_Point_3_D_instance = Pixel_Drawer_Point_3_D.instances[key];
+        //             if(Pixel_Drawer_Point_3_D_instance.y > real_y){
+        //                 Pixel_Drawer_Point_3_D_instance.y +=1;
+        //             }
+        //         }
+        //     }
+
+        // }
+    // }
+
+
+    game.render_function = function(){
+        var grouped_by_y = {};
+        for(var key in Game_Object.instances){
+            var Game_Object_instance = Game_Object.instances[key];
+            if(Game_Object_instance.name != "brick" || !Game_Object_instance.onground){
+                continue;
+            }
+            for(var key in Game_Object_instance.points_object.points){
+                var point_3_d = Game_Object_instance.points_object.points[key];
+                var parse_int_y = parseInt(point_3_d.y);
+                if(grouped_by_y[parse_int_y] == undefined){
+                    grouped_by_y[parse_int_y] = [];
+                }
+                grouped_by_y[parse_int_y].push({"game_object": Game_Object_instance, "points_object": Game_Object_instance.points_object, "point_3_d": point_3_d});
+            }
+        }
+        for(var key in grouped_by_y){
+            var points_3_d_in_row = grouped_by_y[key];
+            if(points_3_d_in_row.length >= 10){
+                // increase speed 
+                
+                game.brick_position_velocity_point_3_d_y += 0.02;
+
+                var parse_int_y = parseInt(points_3_d_in_row[0].point_3_d.y)
+                for(var key in points_3_d_in_row){
+                    var point_3_d_in_row = points_3_d_in_row[key];
+                    
+                    // it turns out deleting an object with references throughout the whole system is not that easy ... 
+                    //the order of deleting the references is important!
+                    point_3_d_in_row.point_3_d.destroy();
+                    point_3_d_in_row.game_object.delete_point_by_object(point_3_d_in_row.point_3_d);
+
+
+                    //point_3_d_in_row.points_object.delete_point_by_point(point_3_d_in_row.point_3_d);
+
+
+                    //point_3_d_in_row.point_3_d.destroy();
+
+                    // debugger;
+                    
+                    // delete point_3_d_in_row.point_3_d;
+
+                    //point_3_d_in_row.game_object.delete_point_by_object(point_3_d_in_row.point_3_d);
+
+                    //point_3_d_in_row.point_3_d.destroy();
+                    //point_3_d_in_row.points_object.delete_point_by_point(point_3_d_in_row.point_3_d);
+                    //point_3_d_in_row.points_object.delete_point_by_point(point_3_d_in_row.point_3_d);
+                    
+                }
+                //points_3_d_in_row = [];
+                for(var key in Game_Object.instances){
+                    var Game_Object_instance = Game_Object.instances[key];
+                    if(Game_Object_instance.name != "brick" || !Game_Object_instance.onground){
+                        continue;
+                    }
+                    for(var key in Game_Object_instance.points_object.points){
+                        var point_3_d = Game_Object_instance.points_object.points[key];
+                        if(point_3_d.y < parse_int_y){
+                            Game_Object_instance.position_point_3_d.y += 1;
+                        }
+                        break;
+                    }
+
+                }
+
+                
+                //game.spawn_brick();
+            }
+        }
+    }
 
         //spawn brick
         game.brick_multiline_strings = [
@@ -127,26 +321,27 @@ xx
 xx
 xx
 `]
+    game.brick_position_velocity_point_3_d_y  = 0.05; 
     game.spawn_brick = function(){
         
 
         var rand_brick_multiline_string = this.brick_multiline_strings[Math.floor(Math.random() * this.brick_multiline_strings.length)];
         //for testing
         //var rand_brick_multiline_string = `\nxx\nxx`;
-        var rand_brick_multiline_string = `\nxxxx\n`;
-        var rand_brick_multiline_string = `\nx\nx\nx\nx\n`;
+        //var rand_brick_multiline_string = `\nxxxx\n`;
+        //var rand_brick_multiline_string = `\nx\nx\nx\nx\n`;
         //var rand_brick_multiline_string = this.brick_multiline_strings[4];
         var brick = new Game_Object(rand_brick_multiline_string);
         
         this.brick = brick;
         brick.name = "brick"
         brick.hue = Math.random()*360
-        brick.brightness = 0.7;
+        brick.brightness = 1;
 
         brick.position_point_3_d.x = this.wall.position_point_3_d.x + this.wall.points_object.width / 2;
         brick.position_point_3_d.y = this.wall.position_point_3_d.y + 1;
         
-        brick.position_velocity_point_3_d.y = 0.05;
+        brick.position_velocity_point_3_d.y = game.brick_position_velocity_point_3_d_y;
 
         //custom prop
         brick.onground = false;
@@ -172,8 +367,22 @@ xx
             
             if(!this.onground){
 
-                this.position_velocity_point_3_d.y = 0.05;
+                this.position_velocity_point_3_d.y = game.brick_position_velocity_point_3_d_y;
                 // we set the width_with_rotation props, because the width of the object is actually the same but when its rotated it can be 'wider' 
+                this.min_x_point = this.points_object.points[0];
+                this.max_x_point = this.points_object.points[0];
+
+                for(var key in this.points_object.points){
+                    var val = this.points_object.points[key];
+                    if(val.x < this.min_x_point.x){
+                        this.min_x_point = val;
+                    }
+                    if(val.x > this.max_x_point.x){
+                        this.max_x_point = val;
+                    }
+                }
+
+                
                 this.width_with_rotation = 
                 Math.abs(this.points_object.width * Math.cos(this.rotation_point_3_d.x)) + 
                 Math.abs(this.points_object.height * Math.sin(this.rotation_point_3_d.x))
@@ -220,7 +429,7 @@ xx
                 }
 
                 if (game.keydownsups["key_ArrowLeft"].down) {
-                    var in_bounds = (this.position_point_3_d.x > game.wall.position_point_3_d.x+1);
+                    var in_bounds = (this.min_x_point.x > game.wall.position_point_3_d.x+1);
                     if(in_bounds){
 
                         if(!game.keydownsups["key_ArrowLeft"].down_lock ){
@@ -244,7 +453,9 @@ xx
                     console.log(this.width_with_rotation)
 
                     //this.width_with_rotation/2 because rotation origin is center
-                    var in_bounds = (this.position_point_3_d.x+this.width_with_rotation/2 < game.wall.position_point_3_d.x +game.wall.points_object.width-1);
+                    //var in_bounds = (this.position_point_3_d.x+this.width_with_rotation/2 < game.wall.position_point_3_d.x +game.wall.points_object.width-1);
+                    var in_bounds = (this.max_x_point.x+1 < game.wall.position_point_3_d.x +game.wall.points_object.width-1);
+                    
                     // 
                     if(in_bounds){
 
@@ -266,7 +477,7 @@ xx
                 }
 
             }else{
-                this.brightness = 0.5;
+                this.brightness = 0.8;
             }
         }
 
