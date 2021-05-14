@@ -63,10 +63,24 @@
     window.g = new Game()
     var game = window.g;
 
-    game.pixel_drawer.scale_x = 10;
-    game.pixel_drawer.scale_y = 10;
+    var game_wall_position_point_3_d_x = 2
+    var game_wall_position_point_3_d_y = 2
+
     game.pixel_grid_width = 12;
     game.pixel_grid_height = 22;
+
+    game.pixel_drawer.scale_x = 10;
+    game.pixel_drawer.scale_y = 10;
+
+    var pixel_ratio_width_to_height =  game.pixel_grid_width + game_wall_position_point_3_d_x / (game.pixel_grid_height + game_wall_position_point_3_d_y)
+
+    if(window.innerWidth > window.innerHeight){
+        var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y;
+    }else{
+        var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y;
+        
+    }
+
 
     // for debugging the game 
     // game.fps = 2;
@@ -106,8 +120,8 @@
     game.wall.position_point_3_d.x = 1
     game.wall.position_point_3_d.y = 1
 
-    game.wall.position_point_3_d.x = 2
-    game.wall.position_point_3_d.y = 2
+    game.wall.position_point_3_d.x = game_wall_position_point_3_d_x
+    game.wall.position_point_3_d.y = game_wall_position_point_3_d_y
     // use it for a fancy time strech effect :) ! 
 
 

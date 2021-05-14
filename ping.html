@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.1/Pizzicato.min.js" integrity="sha512-t3Yc6vJCzfyNrKjNPhcG5V7IuknUYmjFof1CnNs3gJJybQEj9vql++Noi2L+DpD9STdcR5yNDXayT2DiHLAvrA==" crossorigin="anonymous"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+    <style>
+        body{
+            overflow: hidden;
+        }
+        canvas{
+            background-color: black;
+            background:black;
+            /* width:100vw;
+            height:100vh; */
+            position: fixed;
+            z-index: 10;
+            top:0;
+            left:0
+        }
+        .game_console{
+            position: fixed;
+            z-index: 20;
+            top:0;
+            right: 0;
+            color:lightgreen;
+            font-family: monospace;
+            height: 100px;
+            overflow-y:scroll;
+        }
+    </style>
+</head>
+
+
+<body style="width:100%;">
+
+<div style="width:100vw;height:100vh">
+
+    <button style="position: fixed; top:0; left:0;z-index: 22; background: grey;" id="audio_context">no sound</button>
+
+    <canvas id="game" >
+    </canvas>
+</div>
+
+
+    <script type="module">
+
+
+
+    //import {Tone} from "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.15/Tone.js";
+    import {Points_Object} from './Points_Object.js';
+    import {Pixel_Drawer} from './Pixel_Drawer.js';
+    import {Point_3_D}from './Point_3_D.js';
+    import {Game_Object} from './Game_Object.js';
+    import {Game} from './Game.js';
+    
+    window.g = new Game()
+    var game = window.g;
+
+    game.render_delta_limit_ms = 33;
+    
+    game.pixel_grid_width = 55;
+    game.pixel_grid_height = 55;
+    game.pixel_drawer.scale_x = 5;
+    game.pixel_drawer.scale_y = 5;
+
+
+    game.player = new Game_Object(
+`
+xxx
+xxx
+xxx`
+);
+
+    game.player.position_point_3_d.x = game.pixel_grid_width/2;
+    game.player.position_point_3_d.y = game.pixel_grid_height/2;
+    game.player.position_velocity_point_3_d.y = 0.8;
+
+    //pong
+    game.player.collision_function = function(array){
+
+        for(var key in array){
+            var other_collision_object = array[key];
+
+            if(other_collision_object.game_object.name == "plattform"){
+                game.player.position_velocity_point_3_d.y *= -1; 
+            }
+
+        }
+        
+    }
+
+    var p_render_function = function(){
+        if (game.keydownsups["key_ArrowLeft"].down) {
+            this.position_point_3_d.x -= 1;
+        }
+        if (game.keydownsups["key_ArrowRight"].down) {
+            this.position_point_3_d.x += 1;
+        }
+    }
+
+    var p = new Game_Object('xxxxxxxxxxxx');
+    p.name = "plattform";
+    p.position_point_3_d.x = game.pixel_grid_width/2;
+    p.position_point_3_d.y = game.pixel_grid_height;  
+    p.render_function = p_render_function;
+    var p = new Game_Object('xxxxxxxxxxxx');
+    p.name = "plattform";
+    p.position_point_3_d.x = game.pixel_grid_width/2;
+    p.position_point_3_d.y = 0;
+    p.render_function = p_render_function;
+
+
+
+    
+
+    // game.spawn_plattform = function(){
+    //     var p = new Game_Object('xxxxxxxxxxxx');
+    //     p.position_point_3_d.x = game.pixel_grid_width/2;
+    //     p.position_point_3_d.y = game.pixel_grid_height;  
+    // }
+
+    // game.spawn_plattform();
+
+    game.start_rendering();
+
+
+    </script>
+
+
+
+</body>
+</html>
