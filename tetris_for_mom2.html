@@ -74,14 +74,21 @@
 
     var pixel_ratio_width_to_height =  game.pixel_grid_width + game_wall_position_point_3_d_x / (game.pixel_grid_height + game_wall_position_point_3_d_y)
 
-    if(window.innerWidth > window.innerHeight){
-        var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y;
-    }else{
-        var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y;
-        
-    }
+    // if(window.innerWidth > window.innerHeight){
+    //     var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y*2;
+    //     var height_per_pixel = window.innerHeight / game.pixel_grid_height;
+    // }else{
+    //     var height_per_pixel = window.innerHeight / game.pixel_grid_height + game_wall_position_point_3_d_y*2;
+    //     var height_per_pixel = window.innerHeight / game.pixel_grid_height;
+    // }
 
+    var height_per_pixel = window.innerHeight / game.pixel_grid_height;
+    var height_per_pixel = window.innerHeight / (game.pixel_grid_height + game_wall_position_point_3_d_y*2);
 
+    game.pixel_drawer.scale_x = parseInt(height_per_pixel);
+    game.pixel_drawer.scale_y = parseInt(height_per_pixel);
+    game.pixel_drawer.grid_offset_x = 0;
+    game.pixel_drawer.grid_offset_y = 0;
     // for debugging the game 
     // game.fps = 2;
     // game.render_delta_limit_ms = 500;
@@ -122,7 +129,6 @@
 
     game.wall.position_point_3_d.x = game_wall_position_point_3_d_x
     game.wall.position_point_3_d.y = game_wall_position_point_3_d_y
-    // use it for a fancy time strech effect :) ! 
 
 
     game.wall.brightness = 0.6;

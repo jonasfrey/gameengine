@@ -222,7 +222,7 @@ class Pixel_Drawer {
     draw_pixel_border(scaled_pixel) {
 
         this.ctx.beginPath();
-        this.ctx.lineWidth = this.scale_x / 4;
+        this.ctx.lineWidth = Math.min(this.scale_x / 4, 5)
         this.ctx.strokeStyle = "hsla(" + scaled_pixel.hue + ", 50%, 50%, "+scaled_pixel.brightness+")";
         this.ctx.fillStyle = "hsla(" + scaled_pixel.hue + ", 50%, 50%, "+scaled_pixel.brightness+")";
         this.ctx.strokeWidth = this.scale_x / 2;
@@ -231,6 +231,9 @@ class Pixel_Drawer {
         this.ctx.shadowBlur = 5;
 
         this.ctx.rect(scaled_pixel.scaled_x, scaled_pixel.scaled_y, scaled_pixel.scaled_w, scaled_pixel.scaled_h);
+
+        //this.ctx.rect(scaled_pixel.scaled_x+this.ctx.lineWidth/2, scaled_pixel.scaled_y+this.ctx.lineWidth/2, scaled_pixel.scaled_w-this.ctx.lineWidth, scaled_pixel.scaled_h-this.ctx.lineWidth);
+        
         this.ctx.stroke();
         this.ctx.shadowBlur = 0;
 
@@ -326,7 +329,7 @@ class Pixel_Drawer {
     draw_pixels = function(pixels) {
         
         // draw layers separatly
-        var stuff = [ "backlight", "border", "light"];
+        var stuff = [ "backlight",  "border","light"];
         //var stuff = [ "hexagon"];
 
         for (var key in stuff) {
